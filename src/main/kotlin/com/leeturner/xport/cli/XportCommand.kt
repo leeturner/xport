@@ -5,10 +5,9 @@ import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 
 @Command(name = "xtomd", description = ["..."], mixinStandardHelpOptions = true)
-class XtomdCommand : Runnable {
-
+class XportCommand : Runnable {
     @Option(names = ["-v", "--verbose"], description = ["..."])
-    private var verbose : Boolean = false
+    private var verbose: Boolean = false
 
     override fun run() {
         // business logic here
@@ -19,7 +18,7 @@ class XtomdCommand : Runnable {
 
     companion object {
         @JvmStatic fun main(args: Array<String>) {
-          PicocliRunner.run(XtomdCommand::class.java, *args)
+            PicocliRunner.run(XportCommand::class.java, *args)
         }
     }
 }
