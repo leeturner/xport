@@ -4,12 +4,13 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.4.4"
+    id("org.jmailen.kotlinter") version "5.0.1"
 }
 
 version = "0.1"
 group = "com.leeturner"
 
-val kotlinVersion=project.properties.get("kotlinVersion")
+val kotlinVersion= project.properties["kotlinVersion"]
 repositories {
     mavenCentral()
 }
@@ -25,12 +26,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation(project(":domain"))
 }
 
 
 application {
-    mainClass = "com.leeturner.cli.XtomdCommand"
+    mainClass = "com.leeturner.xport.cli.XtomdCommand"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
@@ -44,10 +44,10 @@ kotlin {
 
 
 micronaut {
-    testRuntime("kotest5")
+    testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("com.leeturner.*")
+        annotations("com.leeturner.xport.*")
     }
 }
 
