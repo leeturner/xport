@@ -1,4 +1,4 @@
-package com.leeturner.xtomd.cli
+package com.leeturner.xport.cli
 
 import io.kotest.matchers.string.shouldContain
 import io.kotest.core.spec.style.BehaviorSpec

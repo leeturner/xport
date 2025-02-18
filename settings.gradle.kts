@@ -1,3 +1,3 @@
-rootProject.name="xtomd"
+rootProject.name="xport"
 
 include("domain")

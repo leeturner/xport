@@ -6,9 +6,9 @@ plugins {
 }
 
 version = "0.1"
-group = "com.leeturner.xtomd"
+group = "com.leeturner.xport"
 
-val kotlinVersion=project.properties.get("kotlinVersion")
+val kotlinVersion= project.properties["kotlinVersion"]
 repositories {
     mavenCentral()
 }
