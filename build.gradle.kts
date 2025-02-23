@@ -1,3 +1,5 @@
+import org.jmailen.gradle.kotlinter.support.ReporterType
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.1.10"
     id("org.jetbrains.kotlin.kapt") version "2.1.10"
@@ -5,10 +7,11 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.4.4"
     id("org.jmailen.kotlinter") version "5.0.1"
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
 version = "0.1"
-group = "com.leeturner"
+group = "com.leeturner.xport"
 
 val kotlinVersion= project.properties["kotlinVersion"]
 repositories {
@@ -18,20 +21,28 @@ repositories {
 dependencies {
     kapt("info.picocli:picocli-codegen")
     kapt("io.micronaut.serde:micronaut-serde-processor")
+    
     implementation("info.picocli:picocli")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.picocli:micronaut-picocli")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    implementation(platform("dev.forkhandles:forkhandles-bom:2.20.0.0"))
+    implementation("dev.forkhandles:result4k")
+    
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
-}
 
+    testImplementation("io.strikt:strikt-core:0.34.0")
+    testImplementation("dev.forkhandles:result4k-strikt")
+    testImplementation("org.skyscreamer:jsonassert:2.0-rc1")
+}
 
 application {
-    mainClass = "com.leeturner.xport.cli.XtomdCommand"
+    mainClass = "com.leeturner.xport.cli.XportCommand"
 }
+
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
 }
@@ -42,6 +53,15 @@ kotlin {
     }
 }
 
+kotlinter {
+    reporters = arrayOf(ReporterType.checkstyle.name, ReporterType.plain.name, ReporterType.html.name )
+}
+
+detekt {
+    toolVersion = "1.23.6"
+    config.setFrom(file("config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+}
 
 micronaut {
     testRuntime("junit5")
@@ -50,7 +70,6 @@ micronaut {
         annotations("com.leeturner.xport.*")
     }
 }
-
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
     jdkVersion = "21"
