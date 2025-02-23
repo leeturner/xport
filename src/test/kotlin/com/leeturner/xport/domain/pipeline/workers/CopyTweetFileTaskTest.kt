@@ -18,10 +18,10 @@ import java.nio.file.Path
 
 @MicronautTest
 class CopyTweetFileTaskTest {
-    
     @TempDir lateinit var currentDir: Path
+
     @TempDir lateinit var tempDir: Path
-    
+
     private val worker = CopyTweetFileTask()
 
     @Test
@@ -37,7 +37,8 @@ class CopyTweetFileTaskTest {
             .isFailure()
             .get { result.get() }
             .isA<IllegalStateException>()
-            .message isEqualTo "No temp directory provided. Please provide a tmpDirectory parameter"
+            .message isEqualTo
+            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
     }
 
     @Test
@@ -48,13 +49,12 @@ class CopyTweetFileTaskTest {
             .isFailure()
             .get { result.get() }
             .isA<IllegalStateException>()
-            .message isEqualTo "No current directory provided. Please provide a currentDirectory parameter"
+            .message isEqualTo
+            "No parameter called currentDirectory provided. Please provide a currentDirectory parameter in the context"
     }
 
     @Test
-    fun `the tweets file is copied from the data directory to the tmp directory`(
-        resourceLoader: ResourceLoader,
-    ) {
+    fun `the tweets file is copied from the data directory to the tmp directory`(resourceLoader: ResourceLoader) {
         val contextParameters =
             mapOf(
                 "currentDirectory" to currentDir.toString(),

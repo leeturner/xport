@@ -21,9 +21,8 @@ import kotlin.io.path.writeText
 
 @MicronautTest
 class ConvertTweetJsToJsonTaskTest {
-    
     @TempDir lateinit var tempDir: Path
-    
+
     private val worker = ConvertTweetJsToJsonTask()
 
     @Test
@@ -39,13 +38,12 @@ class ConvertTweetJsToJsonTaskTest {
             .isFailure()
             .get { result.get() }
             .isA<IllegalStateException>()
-            .message isEqualTo "No temp directory provided. Please provide a tmpDirectory parameter"
+            .message isEqualTo
+            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
     }
 
     @Test
-    fun `the tweets file is updated and saved to a json file`(
-        resourceLoader: ResourceLoader,
-    ) {
+    fun `the tweets file is updated and saved to a json file`(resourceLoader: ResourceLoader) {
         val contextParameters = mapOf("tmpDirectory" to tempDir.toString())
         val context = Context(contextParameters)
 
