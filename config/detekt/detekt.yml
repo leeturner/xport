@@ -1,0 +1,7 @@
+performance: 
+  SpreadOperator: 
+    excludes: ['**/**Command**']
+    
+style: 
+  ReturnCount:
+    max: 3
