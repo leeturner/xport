@@ -1,6 +1,7 @@
 package com.leeturner.xport.domain.pipeline.workers
 
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.toFile
 import dev.forkhandles.result4k.get
 import dev.forkhandles.result4k.strikt.isFailure
 import dev.forkhandles.result4k.strikt.isSuccess
@@ -13,7 +14,6 @@ import strikt.api.expectThat
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
-import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -44,14 +44,10 @@ class ConvertTweetJsToJsonTaskTest {
 
     @Test
     fun `the tweets file is updated and saved to a json file`(resourceLoader: ResourceLoader) {
-        val contextParameters = mapOf("tmpDirectory" to tempDir.toString())
-        val context = Context(contextParameters)
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
 
         // Given a tweet.js file exists in the tmp directory
-        val tweetJsResource =
-            resourceLoader.getResource("classpath:archive-content/raw-tweet-file-single-tweet.js")
-                ?: throw IllegalArgumentException("File could not be found on the classpath")
-        val tweetJsResourceFile = File(tweetJsResource.get().toURI())
+        val tweetJsResourceFile = resourceLoader.toFile("classpath:archive-content/raw-tweet-file-single-tweet.js")
         val tweetJsFile = tempDir.resolve("tweets.js")
         tweetJsFile.writeText(tweetJsResourceFile.readText())
 
@@ -59,10 +55,7 @@ class ConvertTweetJsToJsonTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a json file saved in the tmp directory that is the same as the test resource
-        val tweetJsonResource =
-            resourceLoader.getResource("classpath:archive-content/tweet-json-file-single-tweet.json")
-                ?: throw IllegalArgumentException("File could not be found on the classpath")
-        val tweetJsonResourceFile = File(tweetJsonResource.get().toURI())
+        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet.json")
         val tweetJsonFile = tempDir.resolve("tweets.json")
         val tweetJsonFileContent = tweetJsonFile.readText()
 

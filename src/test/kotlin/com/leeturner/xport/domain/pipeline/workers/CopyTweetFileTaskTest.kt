@@ -2,6 +2,7 @@ package com.leeturner.xport.domain.pipeline.workers
 
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.toFile
 import dev.forkhandles.result4k.get
 import dev.forkhandles.result4k.strikt.isFailure
 import dev.forkhandles.result4k.strikt.isSuccess
@@ -13,7 +14,6 @@ import strikt.api.expectThat
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
-import java.io.File
 import java.nio.file.Path
 
 @MicronautTest
@@ -55,21 +55,19 @@ class CopyTweetFileTaskTest {
 
     @Test
     fun `the tweets file is copied from the data directory to the tmp directory`(resourceLoader: ResourceLoader) {
-        val contextParameters =
-            mapOf(
-                "currentDirectory" to currentDir.toString(),
-                "tmpDirectory" to tempDir.toString(),
+        val context =
+            Context(
+                mapOf(
+                    "currentDirectory" to currentDir.toString(),
+                    "tmpDirectory" to tempDir.toString(),
+                ),
             )
-        val context = Context(contextParameters)
 
         // given a directory and a file inside current directory
         val dataDirectory = currentDir.createDataDirectory()
 
         // Load the file from classpath
-        val resource =
-            resourceLoader.getResource("classpath:archive-content/raw-tweet-file-single-tweet.js")
-                ?: throw IllegalArgumentException("File could not be found on the classpath")
-        val resourceFile = File(resource.get().toURI())
+        val resourceFile = resourceLoader.toFile("classpath:archive-content/raw-tweet-file-single-tweet.js")
         val sampleFile = dataDirectory.resolve("tweets.js")
         sampleFile.writeText(resourceFile.readText())
 
