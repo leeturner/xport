@@ -1,24 +1,27 @@
 package com.leeturner.xport.cli
 
 import io.micronaut.configuration.picocli.PicocliRunner
-import io.micronaut.context.ApplicationContext
 import io.micronaut.context.env.Environment
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.contains
+import strikt.assertions.isEqualTo
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class XportCommandTest {
+    
+    val environments = listOf(Environment.CLI, Environment.TEST)
+    
     @Test
     fun testWithCommandLineOption() {
-        val ctx = ApplicationContext.run(Environment.CLI, Environment.TEST)
-        val baos = ByteArrayOutputStream()
+        val outputStream = ByteArrayOutputStream()
 
-        System.setOut(PrintStream(baos))
+        System.setOut(PrintStream(outputStream))
         val args = arrayOf("-v")
-        PicocliRunner.run(XportCommand::class.java, ctx, *args)
+        val exitCode = PicocliRunner.execute(XportCommand::class.java, environments, *args)
 
-        assertTrue(baos.toString().contains("Hi!"))
-        ctx.close()
+        expectThat(exitCode).isEqualTo(0)
+        expectThat(outputStream.toString()).contains("Hi!")
     }
 }
