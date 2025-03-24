@@ -23,7 +23,7 @@ import kotlin.io.path.writeText
 class ConvertTweetJsToJsonTaskTest {
     @TempDir lateinit var tempDir: Path
 
-    private val worker = ConvertTweetJsToJsonTask()
+    private val worker by lazy { ConvertTweetJsToJsonTask() }
 
     @Test
     fun `task returns the correct name`() {

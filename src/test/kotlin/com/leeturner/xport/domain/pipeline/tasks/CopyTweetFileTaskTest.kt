@@ -22,7 +22,7 @@ class CopyTweetFileTaskTest {
 
     @TempDir lateinit var tempDir: Path
 
-    private val worker = CopyTweetFileTask()
+    private val worker by lazy { CopyTweetFileTask() }
 
     @Test
     fun `task returns the correct name`() {

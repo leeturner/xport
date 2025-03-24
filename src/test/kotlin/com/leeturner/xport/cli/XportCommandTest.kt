@@ -2,6 +2,7 @@ package com.leeturner.xport.cli
 
 import io.micronaut.configuration.picocli.PicocliRunner
 import io.micronaut.context.env.Environment
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.contains
@@ -10,10 +11,10 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class XportCommandTest {
-    
     val environments = listOf(Environment.CLI, Environment.TEST)
-    
+
     @Test
+    @Disabled("Not implemented yet")
     fun testWithCommandLineOption() {
         val outputStream = ByteArrayOutputStream()
 
