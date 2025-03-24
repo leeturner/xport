@@ -64,6 +64,7 @@ class XportCommand : Runnable {
                     "currentDirectory" to archiveDirectory.absolutePath,
                     "tmpDirectory" to tmpDir.absolutePath,
                     "outputDirectory" to outputDirectory.absolutePath,
+                    "verbose" to verbose.toString(),
                 ),
             )
 

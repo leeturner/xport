@@ -25,4 +25,6 @@ class XportCommandTest {
         expectThat(exitCode).isEqualTo(0)
         expectThat(outputStream.toString()).contains("Hi!")
     }
+    
+    // TODO: test verbose is passed in the context to the pipeline
 }
