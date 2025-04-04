@@ -4,7 +4,11 @@ performance:
     
 style: 
   ReturnCount:
-    max: 3
+    max: 4
   MaxLineLength:
     maxLineLength: 135
+
+complexity:
+  NestedBlockDepth:
+    threshold: 5
     

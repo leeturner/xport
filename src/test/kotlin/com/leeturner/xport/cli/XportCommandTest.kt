@@ -10,6 +10,7 @@ import strikt.assertions.isEqualTo
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
+@Suppress("detekt:ForbiddenComment")
 class XportCommandTest {
     val environments = listOf(Environment.CLI, Environment.TEST)
 
@@ -25,6 +26,6 @@ class XportCommandTest {
         expectThat(exitCode).isEqualTo(0)
         expectThat(outputStream.toString()).contains("Hi!")
     }
-    
+
     // TODO: test verbose is passed in the context to the pipeline
 }

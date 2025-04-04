@@ -22,6 +22,7 @@ class PipelineTest {
                     "currentDirectory" to "/path/to/archive",
                     "tmpDirectory" to "/path/to/tmp",
                     "outputDirectory" to "/path/to/output",
+                    "verbose" to "false",
                 ),
             )
 
@@ -82,6 +83,7 @@ class PipelineTest {
                     "currentDirectory" to "/path/to/archive",
                     "tmpDirectory" to "/path/to/tmp",
                     "outputDirectory" to "/path/to/output",
+                    "verbose" to "false",
                 ),
             )
 
