@@ -5,13 +5,11 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.onFailure
-import jakarta.inject.Singleton
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
 import kotlin.io.path.exists
 
-@Singleton
 class CopyTweetsMediaFolderTask : Task {
     override fun getDescription() = "Copy the tweets_media folder and its contents from the current directory to the tmp directory"
 
