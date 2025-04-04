@@ -9,7 +9,7 @@ import java.io.IOException
 import java.nio.file.Paths.get
 import kotlin.io.path.copyTo
 
-class CopyTweetFileTask : Task {
+class CopyTweetJsFileTask : Task {
     override fun getDescription() = "Copy the tweet.js file from the data directory to the tmp directory for processing"
 
     override fun run(context: Context): Result<Unit, Exception> {

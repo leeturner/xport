@@ -17,16 +17,16 @@ import strikt.assertions.message
 import java.nio.file.Path
 
 @MicronautTest
-class CopyTweetFileTaskTest {
+class CopyTweetJsFileTaskTest {
     @TempDir lateinit var currentDir: Path
 
     @TempDir lateinit var tempDir: Path
 
-    private val worker by lazy { CopyTweetFileTask() }
+    private val worker by lazy { CopyTweetJsFileTask() }
 
     @Test
     fun `task returns the correct name`() {
-        expectThat(worker.getName()).isEqualTo("CopyTweetFileTask")
+        expectThat(worker.getName()).isEqualTo("CopyTweetJsFileTask")
     }
 
     @Test
