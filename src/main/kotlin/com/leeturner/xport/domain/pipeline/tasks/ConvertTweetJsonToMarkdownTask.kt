@@ -8,14 +8,12 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.onFailure
 import io.micronaut.serde.ObjectMapper
-import jakarta.inject.Singleton
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-@Singleton
 class ConvertTweetJsonToMarkdownTask(
     private val objectMapper: ObjectMapper,
 ) : Task {
