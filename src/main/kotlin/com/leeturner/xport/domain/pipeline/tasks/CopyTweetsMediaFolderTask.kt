@@ -17,10 +17,10 @@ class CopyTweetsMediaFolderTask : Task {
         val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
         val currentDirectory = context.exists("currentDirectory").onFailure { exception -> return exception }
 
-        // Check if the tweets_media directory exists in the current directory
-        val sourceDir = get(currentDirectory, "tweets_media")
+        // Check if the tweets_media directory exists in the current data directory
+        val sourceDir = get(currentDirectory, "data", "tweets_media")
         if (!sourceDir.exists()) {
-            return Failure(IllegalStateException("tweets_media directory does not exist in the current directory"))
+            return Failure(IllegalStateException("tweets_media directory does not exist in the current data directory"))
         }
 
         val destinationDir = get(tmpDirectory, "tweets_media")

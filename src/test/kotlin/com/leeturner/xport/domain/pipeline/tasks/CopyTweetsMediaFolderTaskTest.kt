@@ -1,6 +1,9 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
+import com.leeturner.xport.assertTweetMediaDirDataCopied
+import com.leeturner.xport.assertTweetMediaDirExists
 import com.leeturner.xport.createDataDirectory
+import com.leeturner.xport.createTweetsMediaDirectoryAndAddSampleData
 import com.leeturner.xport.domain.pipeline.Context
 import dev.forkhandles.result4k.get
 import dev.forkhandles.result4k.strikt.isFailure
@@ -12,10 +15,7 @@ import strikt.api.expectThat
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
-import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.createDirectory
-import kotlin.io.path.exists
 
 @MicronautTest
 class CopyTweetsMediaFolderTaskTest {
@@ -74,7 +74,7 @@ class CopyTweetsMediaFolderTaskTest {
             .get { result.get() }
             .isA<IllegalStateException>()
             .message isEqualTo
-            "tweets_media directory does not exist in the current directory"
+            "tweets_media directory does not exist in the current data directory"
     }
 
     @Test
@@ -87,26 +87,16 @@ class CopyTweetsMediaFolderTaskTest {
                 ),
             )
 
+        // create the data directory
+        val dataDir = currentDir.createDataDirectory().toPath()
         // Create the tweets_media directory and some test files
-        val tweetsMediaDir = currentDir.resolve("tweets_media").createDirectory()
-        val testFile1 = File(tweetsMediaDir.toFile(), "test1.jpg")
-        testFile1.writeText("test1 content")
-        val testFile2 = File(tweetsMediaDir.toFile(), "test2.jpg")
-        testFile2.writeText("test2 content")
+        dataDir.createTweetsMediaDirectoryAndAddSampleData()
 
         val result = worker.run(context)
 
-        // Validate the tweets_media directory and its files are in the tempDir
-        val tempMediaDir = tempDir.resolve("tweets_media")
         expectThat(result).isSuccess()
-        expectThat(tempMediaDir.exists()).isEqualTo(true)
-
-        val tempFile1 = File(tempMediaDir.toFile(), "test1.jpg")
-        val tempFile2 = File(tempMediaDir.toFile(), "test2.jpg")
-
-        expectThat(tempFile1.exists()).isEqualTo(true)
-        expectThat(tempFile1.readText()).isEqualTo("test1 content")
-        expectThat(tempFile2.exists()).isEqualTo(true)
-        expectThat(tempFile2.readText()).isEqualTo("test2 content")
+        // Validate the tweets_media directory and its files are in the tempDir
+        tempDir.assertTweetMediaDirExists()
+        tempDir.assertTweetMediaDirDataCopied()
     }
 }
