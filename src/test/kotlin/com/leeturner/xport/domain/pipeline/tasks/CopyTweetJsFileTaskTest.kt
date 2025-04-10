@@ -30,7 +30,7 @@ class CopyTweetJsFileTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected tmpDirectory parameter are not in the context`() {
+    fun `a failure is returned when expected tmpDirectory parameter are not in the context`() {
         val context = Context(mapOf("outputDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
@@ -42,7 +42,7 @@ class CopyTweetJsFileTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected currentDirectory parameter are not in the context`() {
+    fun `a failure is returned when expected currentDirectory parameter are not in the context`() {
         val context = Context(mapOf("outputDirectory" to "foo", "tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
@@ -51,6 +51,28 @@ class CopyTweetJsFileTaskTest {
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called currentDirectory provided. Please provide a currentDirectory parameter in the context"
+    }
+
+    @Test
+    fun `a failure is returned when the tweet js file does not exist in the current data directory`() {
+        val context =
+            Context(
+                mapOf(
+                    "currentDirectory" to currentDir.toString(),
+                    "tmpDirectory" to tempDir.toString(),
+                ),
+            )
+
+        currentDir.createDataDirectory()
+
+        val result = worker.run(context)
+
+        expectThat(result)
+            .isFailure()
+            .get { result.get() }
+            .isA<IllegalStateException>()
+            .message isEqualTo
+            "tweets.js file does not exist in the data directory"
     }
 
     @Test
