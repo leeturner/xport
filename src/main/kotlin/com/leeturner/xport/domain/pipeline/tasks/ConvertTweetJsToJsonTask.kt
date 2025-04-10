@@ -17,6 +17,11 @@ class ConvertTweetJsToJsonTask : Task {
         val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
 
         val tweetJsFile = get(tmpDirectory, "tweets.js")
+        // Check if the tweets js file exists in the tmp directory
+        if (!Files.exists(tweetJsFile)) {
+            return Failure(IllegalStateException("tweets.js file does not exist in the tmp directory"))
+        }
+
         val tweetJsonFile = get(tmpDirectory, "tweets.json")
 
         return try {

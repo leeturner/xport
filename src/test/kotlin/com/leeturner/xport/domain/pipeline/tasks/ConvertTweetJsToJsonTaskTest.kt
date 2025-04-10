@@ -43,6 +43,20 @@ class ConvertTweetJsToJsonTaskTest {
     }
 
     @Test
+    fun `an error is returned if the tweet js file is not in the tmp directory`() {
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+
+        val result = worker.run(context)
+
+        expectThat(result)
+            .isFailure()
+            .get { result.get() }
+            .isA<IllegalStateException>()
+            .message isEqualTo
+            "tweets.js file does not exist in the tmp directory"
+    }
+
+    @Test
     fun `the tweets file is updated and saved to a json file`(resourceLoader: ResourceLoader) {
         val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
 
