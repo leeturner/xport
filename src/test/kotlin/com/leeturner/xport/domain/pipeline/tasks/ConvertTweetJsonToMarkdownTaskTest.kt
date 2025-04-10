@@ -1,5 +1,6 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
+import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.toFile
 import dev.forkhandles.result4k.get
@@ -12,11 +13,11 @@ import jakarta.inject.Inject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import strikt.api.expectThat
-import strikt.assertions.contains
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.io.path.exists
@@ -40,7 +41,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected tmpDirectory parameter is not in the context`() {
+    fun `a failure is returned when expected tmpDirectory parameter is not in the context`() {
         val context = Context(mapOf("outputDirectory" to outputDir.toString()))
         val result = worker.run(context)
         expectThat(result)
@@ -52,19 +53,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected outputDirectory parameter is not in the context`() {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
-        val result = worker.run(context)
-        expectThat(result)
-            .isFailure()
-            .get { result.get() }
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called outputDirectory provided. Please provide a outputDirectory parameter in the context"
-    }
-
-    @Test
-    fun `the tweet json file is converted to markdown files`(resourceLoader: ResourceLoader) {
+    fun `a failure is returned when the tweet json file does not exist in the tmp directory`() {
         val context =
             Context(
                 mapOf(
@@ -72,6 +61,20 @@ class ConvertTweetJsonToMarkdownTaskTest {
                     "outputDirectory" to outputDir.toString(),
                 ),
             )
+
+        val result = worker.run(context)
+
+        expectThat(result)
+            .isFailure()
+            .get { result.get() }
+            .isA<IllegalStateException>()
+            .message isEqualTo
+            "tweet json file does not exist in the tmp directory"
+    }
+
+    @Test
+    fun `the tweet json file is converted to markdown files`(resourceLoader: ResourceLoader) {
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet.json")
@@ -86,26 +89,18 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
         // Parse the tweet date to get the expected filename
         val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<com.leeturner.xport.domain.model.TweetWrapper>::class.java)[0]
+        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
         val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
         val expectedFileName = formatDateForFileName(createdAt) + ".md"
 
-        val markdownFile = outputDir.resolve(expectedFileName)
+        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
+        val markdownFile = outputDir.resolve(pathToMarkdownFile)
         expectThat(markdownFile.exists()).isEqualTo(true)
 
         val expectedMarkdown = resourceLoader.toFile("classpath:archive-content/tweet-markdown-file-single-tweet.md").readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
         expectThat(markdownContent).isEqualTo(expectedMarkdown)
-//        expectThat(markdownContent).contains("---")
-//        expectThat(markdownContent).contains("title: \"Tweet\"")
-//        expectThat(markdownContent).contains("date: \"${tweetWrapper.tweet.createdAt}\"")
-//        expectThat(markdownContent).contains(tweetWrapper.tweet.fullText)
-
-        // If there's media, verify it's included
-//        tweetWrapper.tweet.entities.media.forEach { media ->
-//            expectThat(markdownContent).contains(media.mediaUrl)
-//        }
     }
 
     private fun parseTweetDate(dateString: String): ZonedDateTime {

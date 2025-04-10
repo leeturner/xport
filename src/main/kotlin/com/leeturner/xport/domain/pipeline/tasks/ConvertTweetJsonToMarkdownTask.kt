@@ -21,9 +21,13 @@ class ConvertTweetJsonToMarkdownTask(
 
     override fun run(context: Context): Result<Unit, Exception> {
         val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
-        val outputDirectory = context.exists("outputDirectory").onFailure { exception -> return exception }
+        val outputDirectory = "$tmpDirectory/markdown"
 
         val tweetJsonFile = get(tmpDirectory, "tweets.json")
+        // Check if the tweets js file exists in the tmp directory
+        if (!Files.exists(tweetJsonFile)) {
+            return Failure(IllegalStateException("tweet json file does not exist in the tmp directory"))
+        }
 
         return try {
             val tweetJsonContent = Files.readString(tweetJsonFile)
