@@ -18,7 +18,7 @@ import java.nio.file.Path
 
 @MicronautTest
 class CopyTweetJsFileTaskTest {
-    @TempDir lateinit var currentDir: Path
+    @TempDir lateinit var archiveDir: Path
 
     @TempDir lateinit var tempDir: Path
 
@@ -42,15 +42,15 @@ class CopyTweetJsFileTaskTest {
     }
 
     @Test
-    fun `a failure is returned when expected currentDirectory parameter are not in the context`() {
-        val context = Context(mapOf("outputDirectory" to "foo", "tmpDirectory" to "foo"))
+    fun `a failure is returned when expected archiveDirectory parameter are not in the context`() {
+        val context = Context(mapOf("currentDirectory" to "foo", "tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
             .isFailure()
             .get { result.get() }
             .isA<IllegalStateException>()
             .message isEqualTo
-            "No parameter called currentDirectory provided. Please provide a currentDirectory parameter in the context"
+            "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
     }
 
     @Test
@@ -58,12 +58,12 @@ class CopyTweetJsFileTaskTest {
         val context =
             Context(
                 mapOf(
-                    "currentDirectory" to currentDir.toString(),
+                    "archiveDirectory" to archiveDir.toString(),
                     "tmpDirectory" to tempDir.toString(),
                 ),
             )
 
-        currentDir.createDataDirectory()
+        archiveDir.createDataDirectory()
 
         val result = worker.run(context)
 
@@ -80,13 +80,13 @@ class CopyTweetJsFileTaskTest {
         val context =
             Context(
                 mapOf(
-                    "currentDirectory" to currentDir.toString(),
+                    "archiveDirectory" to archiveDir.toString(),
                     "tmpDirectory" to tempDir.toString(),
                 ),
             )
 
         // given a directory and a file inside current directory
-        val dataDirectory = currentDir.createDataDirectory()
+        val dataDirectory = archiveDir.createDataDirectory()
 
         // Load the file from classpath
         val resourceFile = resourceLoader.toFile("classpath:archive-content/raw-tweet-file-single-tweet.js")
