@@ -15,10 +15,10 @@ class CopyTweetJsFileTask : Task {
 
     override fun run(context: Context): Result<Unit, Exception> {
         val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
-        val currentDirectory = context.exists("currentDirectory").onFailure { exception -> return exception }
+        val archiveDirectory = context.exists("archiveDirectory").onFailure { exception -> return exception }
 
-        // copy the file called tweet.js from the directory in the currentDirectory to the tmpDirectory
-        val tweetJsFile = get(currentDirectory, "data", "tweets.js")
+        // copy the file called tweet.js from the directory in the archiveDirectory to the tmpDirectory
+        val tweetJsFile = get(archiveDirectory, "data", "tweets.js")
         // Check if the tweets js file exists in the current data directory
         if (!Files.exists(tweetJsFile)) {
             return Failure(IllegalStateException("tweets.js file does not exist in the data directory"))
@@ -28,6 +28,9 @@ class CopyTweetJsFileTask : Task {
 
         return try {
             tweetJsFile.copyTo(destinationFile, overwrite = true)
+            if (context.isVerbose()) {
+                println("Successfully copied tweet.js file")
+            }
             Success(Unit)
         } catch (e: IOException) {
             Failure(e)
