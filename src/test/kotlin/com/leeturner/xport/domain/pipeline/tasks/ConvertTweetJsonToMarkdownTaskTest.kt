@@ -28,8 +28,6 @@ import kotlin.io.path.writeText
 class ConvertTweetJsonToMarkdownTaskTest {
     @TempDir lateinit var tempDir: Path
 
-    @TempDir lateinit var outputDir: Path
-
     @Inject
     lateinit var objectMapper: ObjectMapper
 
@@ -42,7 +40,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
     @Test
     fun `a failure is returned when expected tmpDirectory parameter is not in the context`() {
-        val context = Context(mapOf("outputDirectory" to outputDir.toString()))
+        val context = Context(mapOf())
         val result = worker.run(context)
         expectThat(result)
             .isFailure()
@@ -58,7 +56,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
             Context(
                 mapOf(
                     "tmpDirectory" to tempDir.toString(),
-                    "outputDirectory" to outputDir.toString(),
+//                    "outputDirectory" to outputDir.toString(),
                 ),
             )
 
@@ -94,7 +92,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val expectedFileName = formatDateForFileName(createdAt) + ".md"
 
         val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = outputDir.resolve(pathToMarkdownFile)
+        val markdownFile = tempDir.resolve(pathToMarkdownFile)
         expectThat(markdownFile.exists()).isEqualTo(true)
 
         val expectedMarkdown = resourceLoader.toFile("classpath:archive-content/tweet-markdown-file-single-tweet.md").readText()

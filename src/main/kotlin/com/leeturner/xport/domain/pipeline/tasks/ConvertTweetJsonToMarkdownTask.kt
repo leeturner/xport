@@ -20,7 +20,10 @@ class ConvertTweetJsonToMarkdownTask(
     override fun getDescription() = "Convert tweet JSON to markdown files"
 
     override fun run(context: Context): Result<Unit, Exception> {
-        val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
+        val tmpDirectory =
+            context.exists("tmpDirectory").onFailure { exception ->
+                return exception
+            }
         val outputDirectory = "$tmpDirectory/markdown"
 
         val tweetJsonFile = get(tmpDirectory, "tweets.json")
@@ -50,6 +53,9 @@ class ConvertTweetJsonToMarkdownTask(
                 Files.writeString(markdownFile, markdownContent)
             }
 
+            if (context.isVerbose()) {
+                println("Successfully converted tweet JSON file to markdown files")
+            }
             Success(Unit)
         } catch (e: IOException) {
             Failure(e)
@@ -84,7 +90,5 @@ fun Tweet.generateMarkdown() =
         appendLine()
 
         // Add media if present
-        entities.media.forEach { mediaItem ->
-            appendLine("![](${mediaItem.mediaUrlHttps})")
-        }
+        entities.media.forEach { mediaItem -> appendLine("![](${mediaItem.mediaUrlHttps})") }
     }
