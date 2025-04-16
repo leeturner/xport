@@ -10,7 +10,9 @@ import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 import picocli.CommandLine.Parameters
 import java.io.File
-import java.nio.file.Files
+import java.lang.System.err
+import java.util.concurrent.Callable
+import kotlin.io.path.createTempDirectory
 import kotlin.system.exitProcess
 
 @Command(
@@ -18,7 +20,8 @@ import kotlin.system.exitProcess
     description = ["A tool to process Twitter data exports"],
     mixinStandardHelpOptions = true,
 )
-class XportCommand : Runnable {
+@Suppress("detekt:ForbiddenComment")
+class XportCommand : Callable<Int> {
     @Option(names = ["-v", "--verbose"], description = ["Enable verbose output"])
     private var verbose: Boolean = false
 
@@ -28,69 +31,88 @@ class XportCommand : Runnable {
     )
     private lateinit var archiveDirectory: File
 
-    @Option(
-        names = ["-o", "--output"],
+    @Parameters(
+        index = "1",
         description = ["Output directory for processed files"],
     )
-    private var outputDirectory: File = File("output")
+    private lateinit var outputDirectory: File
 
+    // TODO: can we make this use the constructor
     @Inject
     private lateinit var pipeline: Pipeline
 
-    override fun run() {
+    override fun call(): Int {
+        // Validate that the output directory exists.  Exit if not
+        if (outputDirectory.doesNotExist() || outputDirectory.isNotEmpty()) {
+            err.println("The output directory does not exist. This directory must exist and be empty: $outputDirectory")
+            return 1
+        }
+
+        // Validate that the data directory exists in the archive directory.  Exit if not
+        if (archiveDirectory.doesNotExist() || archiveDirectory.doesNotContainsDataDirectory()) {
+            err.println(
+                buildString {
+                    append("The archive directory does not exist. ")
+                    append("This directory must exist and contain the data directory: $archiveDirectory")
+                },
+            )
+            return 1
+        }
+
         if (verbose) {
             println("Processing Twitter archive from: ${archiveDirectory.absolutePath}")
             println("Output directory: ${outputDirectory.absolutePath}")
         }
 
         // Create a temporary directory
-        val tmpDir = Files.createTempDirectory("xport").toFile()
+        val tmpDir = createTempDirectory("xport").toFile()
         if (verbose) {
-            println("Created temporary directory: ${tmpDir.absolutePath}")
+            println("Created temporary directory. This will be deleted on exit: ${tmpDir.absolutePath}")
         }
 
-        // Create the output directory if it doesn't exist
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs()
+        try {
+            // Create the context with the necessary parameters
+            val context =
+                Context(
+                    mapOf(
+                        "archiveDirectory" to archiveDirectory.absolutePath,
+                        "tmpDirectory" to tmpDir.absolutePath,
+                        "outputDirectory" to outputDirectory.absolutePath,
+                        "verbose" to verbose.toString(),
+                    ),
+                )
+
+            // Execute the pipeline
+            val result = pipeline.execute(context)
+            when (result) {
+                is Success -> {
+                    println("Successfully processed Twitter archive")
+                    return 0
+                }
+                is Failure -> {
+                    err.println("Error processing Twitter archive: ${result.reason}")
+                    return 1
+                }
+            }
+        } finally {
+            // Clean up the temporary directory
+            tmpDir.deleteRecursively()
             if (verbose) {
-                println("Created output directory: ${outputDirectory.absolutePath}")
+                println("Cleaned up temporary directory")
             }
-        }
-
-        // Create the context with the necessary parameters
-        val context =
-            Context(
-                mapOf(
-                    "currentDirectory" to archiveDirectory.absolutePath,
-                    "tmpDirectory" to tmpDir.absolutePath,
-                    "outputDirectory" to outputDirectory.absolutePath,
-                    "verbose" to verbose.toString(),
-                ),
-            )
-
-        // Execute the pipeline
-        val result = pipeline.execute(context)
-        when (result) {
-            is Success -> {
-                println("Successfully processed Twitter archive")
-            }
-            is Failure -> {
-                System.err.println("Error processing Twitter archive: ${result.reason}")
-                exitProcess(1)
-            }
-        }
-
-        // Clean up the temporary directory
-        tmpDir.deleteRecursively()
-        if (verbose) {
-            println("Cleaned up temporary directory")
         }
     }
 
     companion object {
         @JvmStatic fun main(args: Array<String>) {
-            val exitCode = PicocliRunner.execute(XportCommand::class.java, *args)
+            val exitCode = PicocliRunner.call(XportCommand::class.java, *args)
             exitProcess(exitCode)
         }
     }
+
+    private fun File.doesNotExist(): Boolean = !exists()
+
+    private fun File.isNotEmpty(): Boolean = !list().isNullOrEmpty()
+
+    private fun File.doesNotContainsDataDirectory(): Boolean = list()?.contains("data") == false
 }
