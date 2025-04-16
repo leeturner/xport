@@ -17,3 +17,9 @@ fun Context.exists(parameterName: String): Result<String, IllegalStateException>
                 "No parameter called $parameterName provided. Please provide a $parameterName parameter in the context",
             ),
         )
+
+/**
+ * Extension function to retrieve the value of the 'verbose' parameter.
+ * Returns true if the 'verbose' parameter is present and equal to 'true', false otherwise
+ */
+fun Context.isVerbose(): Boolean = parameters["verbose"].toBoolean()
