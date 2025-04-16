@@ -19,7 +19,7 @@ import java.nio.file.Path
 
 @MicronautTest
 class CopyTweetsMediaFolderTaskTest {
-    @TempDir lateinit var currentDir: Path
+    @TempDir lateinit var archiveDir: Path
 
     @TempDir lateinit var tempDir: Path
 
@@ -43,7 +43,7 @@ class CopyTweetsMediaFolderTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected currentDirectory parameter are not in the context`() {
+    fun `an error is returned when expected archiveDirectory parameter are not in the context`() {
         val context = Context(mapOf("outputDirectory" to "foo", "tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
@@ -51,7 +51,7 @@ class CopyTweetsMediaFolderTaskTest {
             .get { result.get() }
             .isA<IllegalStateException>()
             .message isEqualTo
-            "No parameter called currentDirectory provided. Please provide a currentDirectory parameter in the context"
+            "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
     }
 
     @Test
@@ -59,13 +59,13 @@ class CopyTweetsMediaFolderTaskTest {
         val context =
             Context(
                 mapOf(
-                    "currentDirectory" to currentDir.toString(),
+                    "archiveDirectory" to archiveDir.toString(),
                     "tmpDirectory" to tempDir.toString(),
                 ),
             )
 
         // Create the data directory but not the tweets_media directory
-        currentDir.createDataDirectory()
+        archiveDir.createDataDirectory()
 
         val result = worker.run(context)
 
@@ -82,13 +82,13 @@ class CopyTweetsMediaFolderTaskTest {
         val context =
             Context(
                 mapOf(
-                    "currentDirectory" to currentDir.toString(),
+                    "archiveDirectory" to archiveDir.toString(),
                     "tmpDirectory" to tempDir.toString(),
                 ),
             )
 
         // create the data directory
-        val dataDir = currentDir.createDataDirectory().toPath()
+        val dataDir = archiveDir.createDataDirectory().toPath()
         // Create the tweets_media directory and some test files
         dataDir.createTweetsMediaDirectoryAndAddSampleData()
 
