@@ -29,6 +29,9 @@ class ConvertTweetJsToJsonTask : Task {
             val tweetJsContent = Files.readString(tweetJsFile)
             val updatedContent = tweetJsContent.dropWhile { it != '[' }
             Files.writeString(tweetJsonFile, updatedContent)
+            if (context.isVerbose()) {
+                println("Successfully converted tweet.js file to JSON")
+            }
             Success(Unit)
         } catch (e: IOException) {
             Failure(e)
