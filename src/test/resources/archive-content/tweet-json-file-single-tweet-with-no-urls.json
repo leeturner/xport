@@ -1,0 +1,48 @@
+[
+  {
+    "tweet" : {
+      "edit_info" : {
+        "initial" : {
+          "editTweetIds" : [
+            "1864605445924544581"
+          ],
+          "editableUntil" : "2024-12-05T10:39:15.659Z",
+          "editsRemaining" : "5",
+          "isEditEligible" : false
+        }
+      },
+      "retweeted" : false,
+      "source" : "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+      "entities" : {
+        "hashtags" : [ ],
+        "symbols" : [ ],
+        "user_mentions" : [
+          {
+            "name" : "WireMock",
+            "screen_name" : "wiremockorg",
+            "indices" : [
+              "3",
+              "15"
+            ],
+            "id_str" : "1637899368010338306",
+            "id" : "1637899368010338306"
+          }
+        ],
+        "urls" : [ ]
+      },
+      "display_text_range" : [
+        "0",
+        "140"
+      ],
+      "favorite_count" : "0",
+      "id_str" : "1864605445924544581",
+      "truncated" : false,
+      "retweet_count" : "0",
+      "id" : "1864605445924544581",
+      "created_at" : "Thu Dec 05 09:39:15 +0000 2024",
+      "favorited" : false,
+      "full_text" : "RT @wiremockorg: The WireMock team is excited to announce the release of WireMock version 3.10.0. This release includes a number of depende…",
+      "lang" : "en"
+    }
+  }
+]

@@ -1,9 +1,9 @@
 ---
-title: 2024-12-22T12-13
-date: 2024-12-22T12:13:03Z
+title: 2024-12-05T09-39
+date: 2024-12-05T09:39:15Z
 author: Custom Author
 showtoc: false
 comments: true
 ---
 
-The real skill is knowing when to stop decorating ![](https://pbs.twimg.com/media/GfZu_tJWoAAINyA.jpg)
+RT @wiremockorg: The WireMock team is excited to announce the release of WireMock version 3.10.0. This release includes a number of depende…
