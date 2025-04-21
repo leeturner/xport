@@ -47,7 +47,7 @@ class ConvertTweetJsonToMarkdownTask(
                 val tweet = tweetWrapper.tweet
                 val createdAt = parseTweetDate(tweet.createdAt)
                 val fileName = formatDateForFileName(createdAt)
-                val markdownContent = tweet.generateMarkdown()
+                val markdownContent = tweet.generateMarkdown(context)
 
                 val markdownFile = get(outputDirectory, "$fileName.md")
                 Files.writeString(markdownFile, markdownContent)
@@ -73,13 +73,18 @@ fun parseTweetDate(dateString: String): ZonedDateTime {
 
 fun formatDateForTitle(dateTime: ZonedDateTime): String = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm"))
 
-fun Tweet.generateMarkdown() =
+fun Tweet.generateMarkdown(context: Context) =
     buildString {
         // Add Hugo front matter
         appendLine("---")
         appendLine("title: ${formatDateForTitle(parseTweetDate(createdAt))}")
         appendLine("date: ${parseTweetDate(createdAt)}")
-        appendLine("author: Lee Turner")
+
+        // Only include author if provided in the context
+        context.parameters["author"]?.let { author ->
+            appendLine("author: $author")
+        }
+
         appendLine("showtoc: false")
         appendLine("comments: true")
         appendLine("---")

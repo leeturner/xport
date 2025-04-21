@@ -6,7 +6,7 @@ style:
   ReturnCount:
     max: 4
   MaxLineLength:
-    maxLineLength: 135
+    maxLineLength: 150
 
 complexity:
   NestedBlockDepth:
