@@ -90,10 +90,17 @@ fun Tweet.generateMarkdown(context: Context) =
         appendLine("---")
         appendLine()
 
-        // Add tweet content
-        appendLine(fullText)
-        appendLine()
+        var text = fullText
+        // process the media urls in the tweet text and replace them with markdown images
+        entities.media.forEach { mediaItem ->
+            text = text.replace(mediaItem.url, "![](${mediaItem.mediaUrlHttps})")
+        }
+        // process the generic urls in the tweet text and replace them with the full urls
+        entities.urls.forEach { urlItem ->
+            text = text.replace(urlItem.url, urlItem.expandedUrl)
+        }
 
-        // Add media if present
-        entities.media.forEach { mediaItem -> appendLine("![](${mediaItem.mediaUrlHttps})") }
+        // Add tweet content
+        appendLine(text)
+        appendLine()
     }

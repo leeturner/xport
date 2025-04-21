@@ -5,6 +5,4 @@ showtoc: false
 comments: true
 ---
 
-The real skill is knowing when to stop decorating https://t.co/YzR4tTuVg4
-
-![](https://pbs.twimg.com/media/GfZu_tJWoAAINyA.jpg)
+The real skill is knowing when to stop decorating ![](https://pbs.twimg.com/media/GfZu_tJWoAAINyA.jpg)

@@ -18,13 +18,21 @@ data class Tweet(
     @JsonProperty("full_text")
     val fullText: String,
     val lang: String,
-    @JsonProperty("extended_entities")
-    val extendedEntities: ExtendedEntities,
+//    @JsonProperty("extended_entities")
+//    val extendedEntities: ExtendedEntities,
 )
 
 @Serdeable
 data class Entities(
     val media: List<Media>,
+    val urls: List<Url>,
+)
+
+@Serdeable
+data class Url(
+    val url: String,
+    @JsonProperty("expanded_url")
+    val expandedUrl: String,
 )
 
 @Serdeable
@@ -38,7 +46,7 @@ data class Media(
     val idStr: String,
 )
 
-@Serdeable
-data class ExtendedEntities(
-    val media: List<Media>,
-)
+// @Serdeable
+// data class ExtendedEntities(
+//    val media: List<Media>,
+// )

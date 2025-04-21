@@ -69,7 +69,7 @@ class ConvertTweetJsToJsonTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a json file saved in the tmp directory that is the same as the test resource
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet.json")
+        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json")
         val tweetJsonFile = tempDir.resolve("tweets.json")
         val tweetJsonFileContent = tweetJsonFile.readText()
 
