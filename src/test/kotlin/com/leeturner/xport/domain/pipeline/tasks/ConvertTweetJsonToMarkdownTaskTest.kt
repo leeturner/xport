@@ -97,7 +97,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
         val expectedMarkdown =
             resourceLoader
-                .toFile("classpath:archive-content/tweet-markdown-file-single-tweet-no-author.md")
+                .toFile("classpath:expected/tweet-markdown-file-single-tweet-no-author.md")
                 .readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
@@ -140,7 +140,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val expectedMarkdown =
             resourceLoader
                 .toFile(
-                    "classpath:archive-content/tweet-markdown-file-single-tweet-custom-author.md",
+                    "classpath:expected/tweet-markdown-file-single-tweet-custom-author.md",
                 ).readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
@@ -181,7 +181,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
         val expectedMarkdown =
             resourceLoader
-                .toFile("classpath:archive-content/tweet-markdown-file-single-tweet-no-author.md")
+                .toFile("classpath:expected/tweet-markdown-file-single-tweet-no-author.md")
                 .readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
@@ -222,7 +222,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
         val expectedMarkdown =
             resourceLoader
-                .toFile("classpath:archive-content/tweet-markdown-file-single-tweet-with-url.md")
+                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-url.md")
                 .readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
