@@ -96,7 +96,12 @@ fun Tweet.generateMarkdown(context: Context) =
             // the name of the image file is the id of the tweet and then the name of the media file
             val mediaFileName = mediaItem.mediaUrlHttps.substring(mediaItem.mediaUrlHttps.lastIndexOf('/') + 1)
             val localMediaFileName = "$id-$mediaFileName"
-            text = text.replace(mediaItem.url, "![]($localMediaFileName)")
+
+            // If mediaPath is provided in the context, prepend it to the image filename
+            val mediaPath = context.parameters["mediaPath"]
+            val imageReference = mediaPath?.let { "![]($it/$localMediaFileName)" } ?: "![]($localMediaFileName)"
+
+            text = text.replace(mediaItem.url, imageReference)
         }
 
         // process the generic urls in the tweet text and replace them with the full urls

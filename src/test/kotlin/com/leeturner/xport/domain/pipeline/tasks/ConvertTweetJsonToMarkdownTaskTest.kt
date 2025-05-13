@@ -272,6 +272,48 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
     }
 
+    @Test
+    fun `the tweet json file is converted to markdown files and media urls include the media path`(resourceLoader: ResourceLoader) {
+        // Given a context with a media path
+        val context =
+            Context(
+                mapOf(
+                    "tmpDirectory" to tempDir.toString(),
+                    "mediaPath" to "images",
+                ),
+            )
+
+        // Given a tweets.json file exists in the tmp directory
+        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json")
+        val tweetJsonFile = tempDir.resolve("tweets.json")
+        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+
+        // When
+        val result = worker.run(context)
+
+        // Then the result should be a markdown file saved in the output directory
+        expectThat(result).isSuccess()
+
+        // Parse the tweet date to get the expected filename
+        val tweetJson = tweetJsonResourceFile.readText()
+        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
+        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
+        val expectedFileName = formatDateForFileName(createdAt) + ".md"
+
+        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
+        val markdownFile = tempDir.resolve(pathToMarkdownFile)
+        expectThat(markdownFile.exists()).isEqualTo(true)
+
+        val expectedMarkdown =
+            resourceLoader
+                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-media-path.md")
+                .readText()
+        // Verify markdown content
+        val markdownContent = markdownFile.readText()
+        // Trim both strings to handle any newline differences
+        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+    }
+
     private fun parseTweetDate(dateString: String): ZonedDateTime {
         // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
         val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy")

@@ -31,6 +31,9 @@ class XportCommand
         @Option(names = ["-a", "--author"], description = ["Author name for generated markdown files"])
         private var author: String? = null
 
+        @Option(names = ["-m", "--media-path"], description = ["Path to be appended to media URLs in generated markdown files"])
+        private var mediaPath: String? = null
+
         @Parameters(
             index = "0",
             description = ["Path to the Twitter archive directory"],
@@ -81,6 +84,7 @@ class XportCommand
                         put("outputDirectory", outputDirectory.absolutePath)
                         put("verbose", verbose.toString())
                         author?.let { put("author", it) }
+                        mediaPath?.let { put("mediaPath", it) }
                     }
 
                 val context = Context(contextParams)
