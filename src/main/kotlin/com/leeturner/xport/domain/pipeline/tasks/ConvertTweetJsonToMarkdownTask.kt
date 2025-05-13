@@ -93,8 +93,12 @@ fun Tweet.generateMarkdown(context: Context) =
         var text = fullText
         // process the media urls in the tweet text and replace them with markdown images
         entities.media.forEach { mediaItem ->
-            text = text.replace(mediaItem.url, "![](${mediaItem.mediaUrlHttps})")
+            // the name of the image file is the id of the tweet and then the name of the media file
+            val mediaFileName = mediaItem.mediaUrlHttps.substring(mediaItem.mediaUrlHttps.lastIndexOf('/') + 1)
+            val localMediaFileName = "$id-$mediaFileName"
+            text = text.replace(mediaItem.url, "![]($localMediaFileName)")
         }
+
         // process the generic urls in the tweet text and replace them with the full urls
         entities.urls.forEach { urlItem ->
             text = text.replace(urlItem.url, urlItem.expandedUrl)
