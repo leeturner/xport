@@ -34,7 +34,7 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    testImplementation("io.strikt:strikt-core:0.34.0")
+    testImplementation("io.strikt:strikt-core:0.35.1")
     testImplementation("dev.forkhandles:result4k-strikt")
     testImplementation("org.skyscreamer:jsonassert:2.0-rc1")
 }
