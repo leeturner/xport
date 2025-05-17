@@ -8,6 +8,9 @@
         </encoder>
     </appender>
 
+    <!-- Set Micronaut loggers to ERROR level only -->
+    <logger name="io.micronaut" level="ERROR" />
+
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
