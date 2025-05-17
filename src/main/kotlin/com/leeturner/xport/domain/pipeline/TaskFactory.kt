@@ -6,6 +6,7 @@ import com.leeturner.xport.domain.pipeline.tasks.CopyTmpToOutputTask
 import com.leeturner.xport.domain.pipeline.tasks.CopyTweetJsFileTask
 import com.leeturner.xport.domain.pipeline.tasks.CopyTweetsMediaFolderTask
 import com.leeturner.xport.domain.pipeline.tasks.DeleteTweetJsFileTask
+import com.leeturner.xport.domain.pipeline.tasks.DeleteTweetsJsonFileTask
 import com.leeturner.xport.domain.pipeline.tasks.Task
 import io.micronaut.context.annotation.Factory
 import io.micronaut.serde.ObjectMapper
@@ -21,6 +22,7 @@ class TaskFactory {
             ConvertTweetJsonToMarkdownTask(objectMapper),
             CopyTweetsMediaFolderTask(),
             DeleteTweetJsFileTask(),
+            DeleteTweetsJsonFileTask(),
             CopyTmpToOutputTask(),
         )
 }
