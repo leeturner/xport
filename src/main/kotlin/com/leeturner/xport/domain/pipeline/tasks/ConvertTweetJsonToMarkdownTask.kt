@@ -13,6 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Paths.get
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class ConvertTweetJsonToMarkdownTask(
     private val objectMapper: ObjectMapper,
@@ -67,7 +68,7 @@ fun formatDateForFileName(dateTime: ZonedDateTime): String = dateTime.format(Dat
 
 fun parseTweetDate(dateString: String): ZonedDateTime {
     // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
-    val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy")
+    val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
     return ZonedDateTime.parse(dateString, formatter)
 }
 
