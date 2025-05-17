@@ -12,12 +12,7 @@ import jakarta.inject.Singleton
 class Pipeline(
     private val tasks: List<Task>,
 ) {
-    fun execute(context: Context): Result<Unit, Exception> = executeTasksInOrder(tasks, context)
-
-    private fun executeTasksInOrder(
-        tasks: List<Task>,
-        context: Context,
-    ): Result<Unit, Exception> {
+    fun execute(context: Context): Result<Unit, Exception> {
         val verbose = context.exists("verbose").onFailure { exception -> return exception }.toBoolean()
         tasks.forEach { task ->
             if (verbose) {
@@ -34,7 +29,6 @@ class Pipeline(
                 }
             }
         }
-
         return Success(Unit)
     }
 }
