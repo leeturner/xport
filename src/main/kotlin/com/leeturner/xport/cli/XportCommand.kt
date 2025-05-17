@@ -17,7 +17,8 @@ import kotlin.system.exitProcess
 
 @Command(
     name = "xport",
-    description = ["A tool to process Twitter data exports"],
+    description = ["A tool to process X/Twitter data exports"],
+    version = ["0.1"],
     mixinStandardHelpOptions = true,
 )
 class XportCommand
@@ -79,7 +80,7 @@ class XportCommand
                 // Create the context with the necessary parameters
                 val contextParams =
                     buildMap {
-                        put("currentDirectory", archiveDirectory.absolutePath)
+                        put("archiveDirectory", archiveDirectory.absolutePath)
                         put("tmpDirectory", tmpDir.absolutePath)
                         put("outputDirectory", outputDirectory.absolutePath)
                         put("verbose", verbose.toString())
@@ -93,11 +94,11 @@ class XportCommand
                 val result = pipeline.execute(context)
                 when (result) {
                     is Success -> {
-                        println("Successfully processed Twitter archive")
+                        println("Successfully processed X/Twitter archive")
                         return 0
                     }
                     is Failure -> {
-                        err.println("Error processing Twitter archive: ${result.reason}")
+                        err.println("Error processing X/Twitter archive: ${result.reason}")
                         return 1
                     }
                 }
@@ -113,7 +114,7 @@ class XportCommand
         companion object {
             @JvmStatic fun main(args: Array<String>) {
                 val exitCode = PicocliRunner.call(XportCommand::class.java, *args)
-                exitProcess(exitCode)
+                exitProcess(exitCode ?: 0)
             }
         }
 
