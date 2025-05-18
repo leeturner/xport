@@ -16,10 +16,12 @@ import strikt.api.expectThat
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
@@ -74,9 +76,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -85,23 +88,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
-        val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
-        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
-        val expectedFileName = formatDateForFileName(createdAt) + ".md"
-
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = tempDir.resolve(pathToMarkdownFile)
-        expectThat(markdownFile.exists()).isEqualTo(true)
-
-        val expectedMarkdown =
-            resourceLoader
-                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-no-urls.md")
-                .readText()
-        // Verify markdown content
-        val markdownContent = markdownFile.readText()
-        // Trim both strings to handle any newline differences
-        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-with-no-urls.md",
+        )
     }
 
     @Test
@@ -116,9 +106,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
             )
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -127,24 +118,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
-        val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
-        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
-        val expectedFileName = formatDateForFileName(createdAt) + ".md"
-
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = tempDir.resolve(pathToMarkdownFile)
-        expectThat(markdownFile.exists()).isEqualTo(true)
-
-        val expectedMarkdown =
-            resourceLoader
-                .toFile(
-                    "classpath:expected/tweet-markdown-file-single-tweet-custom-author.md",
-                ).readText()
-        // Verify markdown content
-        val markdownContent = markdownFile.readText()
-        // Trim both strings to handle any newline differences
-        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-custom-author.md",
+        )
     }
 
     @Test
@@ -158,9 +135,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
             )
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-no-urls.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -169,23 +147,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
-        val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
-        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
-        val expectedFileName = formatDateForFileName(createdAt) + ".md"
-
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = tempDir.resolve(pathToMarkdownFile)
-        expectThat(markdownFile.exists()).isEqualTo(true)
-
-        val expectedMarkdown =
-            resourceLoader
-                .toFile("classpath:expected/tweet-markdown-file-single-tweet-no-author.md")
-                .readText()
-        // Verify markdown content
-        val markdownContent = markdownFile.readText()
-        // Trim both strings to handle any newline differences
-        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-no-author.md",
+        )
     }
 
     @Test
@@ -199,9 +164,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
             )
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-url.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-url.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -210,23 +176,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
-        val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
-        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
-        val expectedFileName = formatDateForFileName(createdAt) + ".md"
-
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = tempDir.resolve(pathToMarkdownFile)
-        expectThat(markdownFile.exists()).isEqualTo(true)
-
-        val expectedMarkdown =
-            resourceLoader
-                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-url.md")
-                .readText()
-        // Verify markdown content
-        val markdownContent = markdownFile.readText()
-        // Trim both strings to handle any newline differences
-        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-with-url.md",
+        )
     }
 
     @Test
@@ -242,9 +195,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
             )
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -253,23 +207,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
-        val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
-        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
-        val expectedFileName = formatDateForFileName(createdAt) + ".md"
-
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
-        val markdownFile = tempDir.resolve(pathToMarkdownFile)
-        expectThat(markdownFile.exists()).isEqualTo(true)
-
-        val expectedMarkdown =
-            resourceLoader
-                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-media-url.md")
-                .readText()
-        // Verify markdown content
-        val markdownContent = markdownFile.readText()
-        // Trim both strings to handle any newline differences
-        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-with-media-url.md",
+        )
     }
 
     @Test
@@ -284,9 +225,10 @@ class ConvertTweetJsonToMarkdownTaskTest {
             )
 
         // Given a tweets.json file exists in the tmp directory
-        val tweetJsonResourceFile = resourceLoader.toFile("classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json")
-        val tweetJsonFile = tempDir.resolve("tweets.json")
-        tweetJsonFile.writeText(tweetJsonResourceFile.readText())
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-media-url.json",
+            )
 
         // When
         val result = worker.run(context)
@@ -295,6 +237,62 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(result).isSuccess()
 
         // Parse the tweet date to get the expected filename
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-with-media-path.md",
+        )
+    }
+
+    @Test
+    fun `the tweet json file is converted to markdown files and images are linked to videos if they are there`(
+        resourceLoader: ResourceLoader,
+    ) {
+        // Given a context without an author
+        val context =
+            Context(
+                mapOf(
+                    "tmpDirectory" to tempDir.toString(),
+                ),
+            )
+
+        // Given a tweets.json file exists in the tmp directory
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-video.json",
+            )
+
+        // When
+        val result = worker.run(context)
+
+        // Then the result should be a markdown file saved in the output directory
+        expectThat(result).isSuccess()
+
+        // Parse the tweet date to get the expected filename
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-json-file-single-tweet-with-video.md",
+        )
+    }
+
+    private fun parseTweetDate(dateString: String): ZonedDateTime {
+        // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
+        val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
+        return ZonedDateTime.parse(dateString, formatter)
+    }
+
+    private fun formatDateForFileName(dateTime: ZonedDateTime) = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm"))
+
+    private fun ResourceLoader.createTweetsJsonFile(resourcePath: String): File {
+        val tweetsJsonResourceFile = toFile(resourcePath)
+        val tweetsJsonFile = tempDir.resolve("tweets.json")
+        tweetsJsonFile.writeText(tweetsJsonResourceFile.readText())
+        return tweetsJsonResourceFile
+    }
+
+    private fun ResourceLoader.expectMarkdownMatches(
+        tweetJsonResourceFile: File,
+        expectedMarkdownFile: String,
+    ) {
         val tweetJson = tweetJsonResourceFile.readText()
         val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
         val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
@@ -305,20 +303,11 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(markdownFile.exists()).isEqualTo(true)
 
         val expectedMarkdown =
-            resourceLoader
-                .toFile("classpath:expected/tweet-markdown-file-single-tweet-with-media-path.md")
+            toFile(expectedMarkdownFile)
                 .readText()
         // Verify markdown content
         val markdownContent = markdownFile.readText()
         // Trim both strings to handle any newline differences
         expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
     }
-
-    private fun parseTweetDate(dateString: String): ZonedDateTime {
-        // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
-        val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy")
-        return ZonedDateTime.parse(dateString, formatter)
-    }
-
-    private fun formatDateForFileName(dateTime: ZonedDateTime) = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm"))
 }

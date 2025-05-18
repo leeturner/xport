@@ -8,6 +8,7 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.onFailure
 import io.micronaut.serde.ObjectMapper
+import java.awt.SystemColor.text
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
@@ -101,8 +102,35 @@ fun Tweet.generateMarkdown(context: Context) =
             // If mediaPath is provided in the context, prepend it to the image filename
             val mediaPath = context.parameters["mediaPath"]
             val imageReference = mediaPath?.let { "![]($it/$localMediaFileName)" } ?: "![]($localMediaFileName)"
+            // [![](1000473983920279553-DdvMsSpUQAEwJh_.jpg)](path-to-your-video-file.mp4)
 
-            text = text.replace(mediaItem.url, imageReference)
+            // let's see if there is a video associated to this image
+            val extendedMediaItem =
+                extendedEntities?.media?.firstOrNull { extendedMediaItem ->
+                    extendedMediaItem.mediaUrlHttps == mediaItem.mediaUrlHttps
+                }
+            val mp4Reference =
+                if (extendedMediaItem != null) {
+                    // find the first mp4
+                    val mp4 =
+                        extendedMediaItem.videoInfo?.variants?.firstOrNull { variant ->
+                            variant.contentType == "video/mp4"
+                        }
+                    if (mp4 != null) {
+                        val mp4FileName = mp4.url.substring(mp4.url.lastIndexOf('/') + 1)
+                        val localMp4FileName = "$id-$mp4FileName"
+                        val mp4Reference = mediaPath?.let { "$it/$localMp4FileName" } ?: localMp4FileName
+                        mp4Reference
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+
+            val fullMediaReference = mp4Reference?.let { "[$imageReference]($it)" } ?: imageReference
+
+            text = text.replace(mediaItem.url, fullMediaReference)
         }
 
         // process the generic urls in the tweet text and replace them with the full urls

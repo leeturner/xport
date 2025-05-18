@@ -1,0 +1,148 @@
+[
+  {
+    "tweet": {
+      "edit_info": {
+        "initial": {
+          "editTweetIds": [
+            "1000473983920279553"
+          ],
+          "editableUntil": "2018-05-26T21:29:20.331Z",
+          "editsRemaining": "5",
+          "isEditEligible": true
+        }
+      },
+      "retweeted": false,
+      "source": "<a href=\"http://tapbots.com/tweetbot\" rel=\"nofollow\">Tweetbot for iΟS</a>",
+      "entities": {
+        "user_mentions": [
+          {
+            "name": "ערבי ותו לא!",
+            "screen_name": "arbiv2lo",
+            "indices": [
+              "3",
+              "12"
+            ],
+            "id_str": "299210664",
+            "id": "299210664"
+          }
+        ],
+        "urls": [],
+        "symbols": [],
+        "media": [
+          {
+            "expanded_url": "https://x.com/arbiv2lo/status/998616956923244545/photo/1",
+            "source_status_id": "998616956923244545",
+            "indices": [
+              "27",
+              "50"
+            ],
+            "url": "https://t.co/zy5GY37Vkt",
+            "media_url": "http://pbs.twimg.com/tweet_video_thumb/DdvMsSpUQAEwJh_.jpg",
+            "id_str": "998616803684139009",
+            "source_user_id": "299210664",
+            "id": "998616803684139009",
+            "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/DdvMsSpUQAEwJh_.jpg",
+            "source_user_id_str": "299210664",
+            "sizes": {
+              "medium": {
+                "w": "674",
+                "h": "1200",
+                "resize": "fit"
+              },
+              "large": {
+                "w": "728",
+                "h": "1296",
+                "resize": "fit"
+              },
+              "small": {
+                "w": "382",
+                "h": "680",
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": "150",
+                "h": "150",
+                "resize": "crop"
+              }
+            },
+            "type": "photo",
+            "source_status_id_str": "998616956923244545",
+            "display_url": "pic.x.com/zy5GY37Vkt"
+          }
+        ],
+        "hashtags": []
+      },
+      "display_text_range": [
+        "0",
+        "50"
+      ],
+      "favorite_count": "0",
+      "id_str": "1000473983920279553",
+      "truncated": false,
+      "retweet_count": "0",
+      "id": "1000473983920279553",
+      "possibly_sensitive": false,
+      "created_at": "Sat May 26 20:29:20 +0000 2018",
+      "favorited": false,
+      "full_text": "RT @arbiv2lo: Like a boss. https://t.co/zy5GY37Vkt",
+      "lang": "en",
+      "extended_entities": {
+        "media": [
+          {
+            "expanded_url": "https://x.com/arbiv2lo/status/998616956923244545/photo/1",
+            "source_status_id": "998616956923244545",
+            "indices": [
+              "27",
+              "50"
+            ],
+            "url": "https://t.co/zy5GY37Vkt",
+            "media_url": "http://pbs.twimg.com/tweet_video_thumb/DdvMsSpUQAEwJh_.jpg",
+            "id_str": "998616803684139009",
+            "video_info": {
+              "aspect_ratio": [
+                "91",
+                "162"
+              ],
+              "variants": [
+                {
+                  "bitrate": "0",
+                  "content_type": "video/mp4",
+                  "url": "https://video.twimg.com/tweet_video/DdvMsSpUQAEwJh_.mp4"
+                }
+              ]
+            },
+            "source_user_id": "299210664",
+            "id": "998616803684139009",
+            "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/DdvMsSpUQAEwJh_.jpg",
+            "source_user_id_str": "299210664",
+            "sizes": {
+              "medium": {
+                "w": "674",
+                "h": "1200",
+                "resize": "fit"
+              },
+              "large": {
+                "w": "728",
+                "h": "1296",
+                "resize": "fit"
+              },
+              "small": {
+                "w": "382",
+                "h": "680",
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": "150",
+                "h": "150",
+                "resize": "crop"
+              }
+            },
+            "type": "animated_gif",
+            "source_status_id_str": "998616956923244545",
+            "display_url": "pic.x.com/zy5GY37Vkt"
+          }
+        ]
+      }
+    }
+  }
+]
