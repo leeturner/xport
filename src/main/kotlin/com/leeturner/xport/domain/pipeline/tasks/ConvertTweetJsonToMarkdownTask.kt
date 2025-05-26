@@ -102,35 +102,34 @@ fun Tweet.generateMarkdown(context: Context) =
             // If mediaPath is provided in the context, prepend it to the image filename
             val mediaPath = context.parameters["mediaPath"]
             val imageReference = mediaPath?.let { "![]($it/$localMediaFileName)" } ?: "![]($localMediaFileName)"
-            // [![](1000473983920279553-DdvMsSpUQAEwJh_.jpg)](path-to-your-video-file.mp4)
 
-            // let's see if there is a video associated to this image
+            // let's see if there is a video associated to this tweet
             val extendedMediaItem =
                 extendedEntities?.media?.firstOrNull { extendedMediaItem ->
                     extendedMediaItem.mediaUrlHttps == mediaItem.mediaUrlHttps
                 }
             val mp4Reference =
-                if (extendedMediaItem != null) {
-                    // find the first mp4
-                    val mp4 =
-                        extendedMediaItem.videoInfo?.variants?.firstOrNull { variant ->
+                extendedMediaItem?.let { mediaItem ->
+                    mediaItem.videoInfo
+                        ?.variants
+                        ?.firstOrNull { variant ->
                             variant.contentType == "video/mp4"
+                        }?.let { mp4 ->
+                            val mp4FileName = mp4.url.substring(mp4.url.lastIndexOf('/') + 1)
+                            val localMp4FileName = "$id-$mp4FileName"
+                            mediaPath?.let { "$it/$localMp4FileName" } ?: localMp4FileName
                         }
-                    if (mp4 != null) {
-                        val mp4FileName = mp4.url.substring(mp4.url.lastIndexOf('/') + 1)
-                        val localMp4FileName = "$id-$mp4FileName"
-                        val mp4Reference = mediaPath?.let { "$it/$localMp4FileName" } ?: localMp4FileName
-                        mp4Reference
-                    } else {
-                        null
-                    }
-                } else {
-                    null
                 }
 
-            val fullMediaReference = mp4Reference?.let { "[$imageReference]($it)" } ?: imageReference
-
-            text = text.replace(mediaItem.url, fullMediaReference)
+            if (mp4Reference != null) {
+                text =
+                    text.replace(
+                        mediaItem.url,
+                        """<video controls="" src="$mp4Reference" style="width: 100%; height: 100%; background-color: black;">""",
+                    )
+            } else {
+                text = text.replace(mediaItem.url, imageReference)
+            }
         }
 
         // process the generic urls in the tweet text and replace them with the full urls
