@@ -1,0 +1,62 @@
+[
+  {
+    "tweet": {
+      "edit_info": {
+        "initial": {
+          "editTweetIds": [
+            "1868592038075314317"
+          ],
+          "editableUntil": "2024-12-16T10:40:33.000Z",
+          "editsRemaining": "5",
+          "isEditEligible": true
+        }
+      },
+      "retweeted": false,
+      "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+      "entities": {
+        "hashtags": [],
+        "symbols": [],
+        "user_mentions": [
+          {
+            "name": "WireMock",
+            "screen_name": "wiremockorg",
+            "indices": [
+              "0",
+              "12"
+            ],
+            "id_str": "1637899368010338306",
+            "id": "1637899368010338306"
+          }
+        ],
+        "urls": [
+          {
+            "url": "https://t.co/V5p3xNfzne",
+            "expanded_url": "https://www.wiremock.io/careers/solutions-engineer",
+            "display_url": "wiremock.io/careers/soluti…",
+            "indices": [
+              "213",
+              "236"
+            ]
+          }
+        ]
+      },
+      "display_text_range": [
+        "0",
+        "236"
+      ],
+      "favorite_count": "2",
+      "id_str": "1868592038075314317",
+      "in_reply_to_user_id": "1637899368010338306",
+      "truncated": false,
+      "retweet_count": "1",
+      "id": "1868592038075314317",
+      "possibly_sensitive": false,
+      "created_at": "Mon Dec 16 09:40:33 +0000 2024",
+      "favorited": false,
+      "full_text": "@wiremockorg are looking for a Solutions Engineer in the UK to help our customers get the best out of WireMock Cloud.\n\nYou will be joining a great, supportive team and if you want to know more, please reach out.\n\nhttps://t.co/V5p3xNfzne",
+      "lang": "en",
+      "in_reply_to_screen_name": "wiremockorg",
+      "in_reply_to_user_id_str": "1637899368010338306"
+    }
+  }
+]

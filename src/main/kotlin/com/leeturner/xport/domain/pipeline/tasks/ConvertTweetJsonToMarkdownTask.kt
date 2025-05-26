@@ -8,7 +8,6 @@ import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import dev.forkhandles.result4k.onFailure
 import io.micronaut.serde.ObjectMapper
-import java.awt.SystemColor.text
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
@@ -140,4 +139,7 @@ fun Tweet.generateMarkdown(context: Context) =
         // Add tweet content
         appendLine(text)
         appendLine()
+        if (inReplyToScreenName != null) {
+            appendLine("In reply to [this post](https://x.com/$inReplyToScreenName/status/$inReplyToUserId) by @$inReplyToScreenName")
+        }
     }
