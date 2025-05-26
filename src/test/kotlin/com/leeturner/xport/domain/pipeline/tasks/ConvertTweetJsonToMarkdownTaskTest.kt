@@ -273,11 +273,9 @@ class ConvertTweetJsonToMarkdownTaskTest {
             "classpath:expected/tweet-markdown-file-single-tweet-with-video.md",
         )
     }
-    
+
     @Test
-    fun `the tweet json file is converted to markdown files and reply to links are added`(
-        resourceLoader: ResourceLoader,
-    ) {
+    fun `the tweet json file is converted to markdown files and reply to links are added`(resourceLoader: ResourceLoader) {
         // Given a context without an author
         val context =
             Context(
