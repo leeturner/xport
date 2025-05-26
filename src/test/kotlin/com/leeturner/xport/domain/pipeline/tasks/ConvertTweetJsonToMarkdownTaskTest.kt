@@ -270,7 +270,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
             tweetJsonResourceFile,
-            "classpath:expected/tweet-json-file-single-tweet-with-video.md",
+            "classpath:expected/tweet-markdown-file-single-tweet-with-video.md",
         )
     }
 
