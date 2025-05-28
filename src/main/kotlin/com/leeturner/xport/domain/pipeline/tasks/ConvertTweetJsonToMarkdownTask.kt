@@ -3,6 +3,9 @@ package com.leeturner.xport.domain.pipeline.tasks
 import com.leeturner.xport.domain.model.Tweet
 import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.domain.pipeline.exists
+import com.leeturner.xport.domain.pipeline.isFilterReplies
+import com.leeturner.xport.domain.pipeline.isVerbose
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
@@ -43,6 +46,15 @@ class ConvertTweetJsonToMarkdownTask(
                 Files.createDirectories(outputPath)
             }
 
+            // Create filtered directory if filter-replies is enabled
+            val filteredDirectory = "$tmpDirectory/filtered"
+            if (context.isFilterReplies()) {
+                val filteredPath = get(filteredDirectory)
+                if (!Files.exists(filteredPath)) {
+                    Files.createDirectories(filteredPath)
+                }
+            }
+
             // Generate markdown for each tweet
             tweets.forEach { tweetWrapper ->
                 val tweet = tweetWrapper.tweet
@@ -50,7 +62,11 @@ class ConvertTweetJsonToMarkdownTask(
                 val fileName = formatDateForFileName(createdAt)
                 val markdownContent = tweet.generateMarkdown(context)
 
-                val markdownFile = get(outputDirectory, "$fileName.md")
+                // Check if the tweet is a reply and if we should filter it
+                val isReply = tweet.inReplyToUserId != null
+                val directory = if (isReply && context.isFilterReplies()) filteredDirectory else outputDirectory
+
+                val markdownFile = get(directory, "$fileName.md")
                 Files.writeString(markdownFile, markdownContent)
             }
 

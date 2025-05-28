@@ -303,6 +303,90 @@ class ConvertTweetJsonToMarkdownTaskTest {
         )
     }
 
+    @Test
+    fun `reply tweets are saved to the filtered directory when filter-replies is enabled`(resourceLoader: ResourceLoader) {
+        // Given a context with filter-replies enabled
+        val context =
+            Context(
+                mapOf(
+                    "tmpDirectory" to tempDir.toString(),
+                    "filterReplies" to "true",
+                ),
+            )
+
+        // Given a tweets.json file exists in the tmp directory
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-in-reply-to.json",
+            )
+
+        // When
+        val result = worker.run(context)
+
+        // Then the result should be a markdown file saved in the filtered directory
+        expectThat(result).isSuccess()
+
+        // Parse the tweet date to get the expected filename
+        val tweetJson = tweetJsonResourceFile.readText()
+        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
+        val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
+        val expectedFileName = formatDateForFileName(createdAt) + ".md"
+
+        val pathToMarkdownFile = Paths.get(tempDir.toString(), "filtered", expectedFileName)
+        val markdownFile = tempDir.resolve(pathToMarkdownFile)
+        expectThat(markdownFile.exists()).isEqualTo(true)
+
+        val expectedMarkdown =
+            resourceLoader
+                .toFile("classpath:expected/tweet-markdown-file-reply-tweet.md")
+                .readText()
+        // Verify markdown content
+        val markdownContent = markdownFile.readText()
+        // Trim both strings to handle any newline differences
+        expectThat(markdownContent.trim()).isEqualTo(expectedMarkdown.trim())
+    }
+
+    @Test
+    fun `multiple tweets are correctly filtered when filter-replies is enabled`(resourceLoader: ResourceLoader) {
+        // Given a context with filter-replies enabled
+        val context =
+            Context(
+                mapOf(
+                    "tmpDirectory" to tempDir.toString(),
+                    "filterReplies" to "true",
+                ),
+            )
+
+        // Given a tweets.json file with multiple tweets exists in the tmp directory
+        resourceLoader.createTweetsJsonFile(
+            "classpath:archive-content/tweet-json-file-multiple-tweets-with-replies.json",
+        )
+
+        // When
+        val result = worker.run(context)
+
+        // Then the result should be successful
+        expectThat(result).isSuccess()
+
+        // Check that the reply tweet is in the filtered directory
+        val replyTweetPath = Paths.get(tempDir.toString(), "filtered", "2024-12-16T09-40.md")
+        expectThat(tempDir.resolve(replyTweetPath).exists()).isEqualTo(true)
+
+        // Check that the non-reply tweet is in the markdown directory
+        val nonReplyTweetPath = Paths.get(tempDir.toString(), "markdown", "2024-12-16T10-40.md")
+        expectThat(tempDir.resolve(nonReplyTweetPath).exists()).isEqualTo(true)
+
+        // Verify content of the reply tweet
+        val replyContent = tempDir.resolve(replyTweetPath).readText().trim()
+        val expectedReplyContent = resourceLoader.toFile("classpath:expected/tweet-markdown-file-reply-tweet.md").readText().trim()
+        expectThat(replyContent).isEqualTo(expectedReplyContent)
+
+        // Verify content of the non-reply tweet
+        val nonReplyContent = tempDir.resolve(nonReplyTweetPath).readText().trim()
+        val expectedNonReplyContent = resourceLoader.toFile("classpath:expected/tweet-markdown-file-non-reply-tweet.md").readText().trim()
+        expectThat(nonReplyContent).isEqualTo(expectedNonReplyContent)
+    }
+
     private fun parseTweetDate(dateString: String): ZonedDateTime {
         // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
         val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
@@ -321,13 +405,15 @@ class ConvertTweetJsonToMarkdownTaskTest {
     private fun ResourceLoader.expectMarkdownMatches(
         tweetJsonResourceFile: File,
         expectedMarkdownFile: String,
+        isFiltered: Boolean = false,
     ) {
         val tweetJson = tweetJsonResourceFile.readText()
         val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
         val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
         val expectedFileName = formatDateForFileName(createdAt) + ".md"
 
-        val pathToMarkdownFile = Paths.get(tempDir.toString(), "markdown", expectedFileName)
+        val directory = if (isFiltered) "filtered" else "markdown"
+        val pathToMarkdownFile = Paths.get(tempDir.toString(), directory, expectedFileName)
         val markdownFile = tempDir.resolve(pathToMarkdownFile)
         expectThat(markdownFile.exists()).isEqualTo(true)
 

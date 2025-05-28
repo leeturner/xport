@@ -35,6 +35,9 @@ class XportCommand
         @Option(names = ["-m", "--media-path"], description = ["Path to be appended to media URLs in generated markdown files"])
         private var mediaPath: String? = null
 
+        @Option(names = ["-f", "--filter-replies"], description = ["Filter out tweets that are replying to another tweet"])
+        private var filterReplies: Boolean = false
+
         @Parameters(
             index = "0",
             description = ["Path to the Twitter archive directory"],
@@ -84,6 +87,7 @@ class XportCommand
                         put("tmpDirectory", tmpDir.absolutePath)
                         put("outputDirectory", outputDirectory.absolutePath)
                         put("verbose", verbose.toString())
+                        put("filterReplies", filterReplies.toString())
                         author?.let { put("author", it) }
                         mediaPath?.let { put("mediaPath", it) }
                     }

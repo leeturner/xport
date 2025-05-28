@@ -1,6 +1,8 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.domain.pipeline.exists
+import com.leeturner.xport.domain.pipeline.isVerbose
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
