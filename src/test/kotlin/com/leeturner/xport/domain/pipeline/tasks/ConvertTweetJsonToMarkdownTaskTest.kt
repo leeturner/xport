@@ -387,6 +387,35 @@ class ConvertTweetJsonToMarkdownTaskTest {
         expectThat(nonReplyContent).isEqualTo(expectedNonReplyContent)
     }
 
+    @Test
+    fun `hugo date issue`(resourceLoader: ResourceLoader) {
+        // Given a context without an author
+        val context =
+            Context(
+                mapOf(
+                    "tmpDirectory" to tempDir.toString(),
+                ),
+            )
+
+        // Given a tweets.json file exists in the tmp directory
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/hugo-date-issue.json",
+            )
+
+        // When
+        val result = worker.run(context)
+
+        // Then the result should be a markdown file saved in the output directory
+        expectThat(result).isSuccess()
+
+        // Parse the tweet date to get the expected filename
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/hugo-date-issue.md",
+        )
+    }
+
     private fun parseTweetDate(dateString: String): ZonedDateTime {
         // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
         val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)

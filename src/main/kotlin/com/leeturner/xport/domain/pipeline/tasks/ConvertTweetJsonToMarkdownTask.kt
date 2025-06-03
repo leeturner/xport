@@ -82,6 +82,8 @@ class ConvertTweetJsonToMarkdownTask(
 
 fun formatDateForFileName(dateTime: ZonedDateTime): String = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm"))
 
+fun formatDateTimeWithSeconds(dateTime: ZonedDateTime): String = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX"))
+
 fun parseTweetDate(dateString: String): ZonedDateTime {
     // Twitter date format: "Sun Dec 22 12:13:03 +0000 2024"
     val formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH)
@@ -95,7 +97,7 @@ fun Tweet.generateMarkdown(context: Context) =
         // Add Hugo front matter
         appendLine("---")
         appendLine("title: ${formatDateForTitle(parseTweetDate(createdAt))}")
-        appendLine("date: ${parseTweetDate(createdAt)}")
+        appendLine("date: ${formatDateTimeWithSeconds(parseTweetDate(createdAt))}")
 
         // Only include author if provided in the context
         context.parameters["author"]?.let { author ->
