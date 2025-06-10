@@ -49,13 +49,38 @@ xport [OPTIONS] <archive-directory> <output-directory>
 
 ### Options
 
-- `-v, --verbose`: Enable verbose output
+- `-a, --author`: Author name for generated markdown files
+- `-f, --filter-replies`: Filter out tweets that are replying to another tweet
+- `-m, --media-path`: Path to be appended to media URLs in generated markdown files
 - `-h, --help`: Show help message and exit
+- `-v, --verbose`: Enable verbose output
+- `-V, --version`: Show version information and exit
 
-### Example
+### Examples
 
+Basic usage:
 ```bash
-xport --v ~/Downloads/twitter-archive ~/Documents/my-tweets
+xport ~/Downloads/twitter-archive ~/Documents/my-tweets
+```
+
+With verbose output:
+```bash
+xport -v ~/Downloads/twitter-archive ~/Documents/my-tweets
+```
+
+Specifying an author and filtering out replies:
+```bash
+xport -a "John Doe" -f ~/Downloads/twitter-archive ~/Documents/my-tweets
+```
+
+Setting a custom media path:
+```bash
+xport -m "/images/tweets" ~/Downloads/twitter-archive ~/Documents/my-tweets
+```
+
+Using multiple options:
+```bash
+xport -v -a "John Doe" -m "/images/tweets" -f ~/Downloads/twitter-archive ~/Documents/my-tweets
 ```
 
 ## How It Works
@@ -65,6 +90,11 @@ Xport processes your Twitter archive through a pipeline of tasks:
 1. Copies the tweet.js file from the archive
 2. Converts the JavaScript format to JSON
 3. Transforms the JSON to Hugo-compatible Markdown
+   - Parses and formats tweet timestamps for filenames and Hugo front matter
+   - Expands shortened Twitter URLs (t.co links) to their original full URLs
+   - Converts media URLs to proper markdown image references or HTML video tags
+   - Adds reply context with links to original tweets for replies
+   - Applies custom author name and media paths if provided
 4. Copies media files (images, videos) from the archive
 5. Cleans up temporary files
 
@@ -79,14 +109,14 @@ Each tweet is converted to a Markdown file with the following structure:
 ---
 title: YYYY-MM-DDTHH-MM
 date: YYYY-MM-DDTHH:MM:SS+0000
-author: Lee Turner
+author: Your Name  # Customizable with the -a, --author option
 showtoc: false
 comments: true
 ---
 
 Tweet content goes here
 
-![](media_url) <!-- If the tweet contains media -->
+![](/path/to/media)  # Path prefix customizable with the -m, --media-path option
 ```
 
 ## Contributing
