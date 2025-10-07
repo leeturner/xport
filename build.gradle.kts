@@ -21,7 +21,7 @@ repositories {
 dependencies {
     kapt("info.picocli:picocli-codegen")
     kapt("io.micronaut.serde:micronaut-serde-processor")
-    
+
     implementation("info.picocli:picocli")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
     implementation("io.micronaut.picocli:micronaut-picocli")
@@ -30,7 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
     implementation(platform("dev.forkhandles:forkhandles-bom:2.23.0.0"))
     implementation("dev.forkhandles:result4k")
-    
+
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
@@ -58,7 +58,7 @@ kotlinter {
 }
 
 detekt {
-    toolVersion = "1.23.6"
+    toolVersion = "1.23.8"
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
