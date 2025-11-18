@@ -101,6 +101,7 @@ class XportCommand
                         println("Successfully processed X/Twitter archive")
                         return 0
                     }
+
                     is Failure -> {
                         err.println("Error processing X/Twitter archive: ${result.reason}")
                         return 1

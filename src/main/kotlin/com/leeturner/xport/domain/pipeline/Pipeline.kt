@@ -23,6 +23,7 @@ class Pipeline(
                     println("Task ${task.getName()} failed: ${result.reason}")
                     return result
                 }
+
                 is Success -> {
                     // Continue to the next task
                 }
