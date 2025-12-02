@@ -28,7 +28,7 @@ dependencies {
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
-    implementation(platform("dev.forkhandles:forkhandles-bom:2.23.0.0"))
+    implementation(platform("dev.forkhandles:forkhandles-bom:2.24.0.0"))
     implementation("dev.forkhandles:result4k")
 
     runtimeOnly("ch.qos.logback:logback-classic")
