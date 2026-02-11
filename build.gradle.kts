@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.allopen") version "2.3.10"
     id("com.gradleup.shadow") version "9.3.1"
     id("io.micronaut.application") version "4.6.2"
-    id("org.jmailen.kotlinter") version "5.4.0"
+    id("org.jmailen.kotlinter") version "5.4.2"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
