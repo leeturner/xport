@@ -3,7 +3,7 @@ import org.jmailen.gradle.kotlinter.support.ReporterType
 plugins {
     id("org.jetbrains.kotlin.jvm") version "2.4.0"
     id("org.jetbrains.kotlin.kapt") version "2.4.0"
-    id("org.jetbrains.kotlin.plugin.allopen") version "2.4.0"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.4.10"
     id("com.gradleup.shadow") version "9.4.2"
     id("io.micronaut.application") version "4.6.2"
     id("org.jmailen.kotlinter") version "5.6.0"
