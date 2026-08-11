@@ -5,9 +5,9 @@ plugins {
     id("org.jetbrains.kotlin.kapt") version "2.4.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.4.10"
     id("com.gradleup.shadow") version "9.6.1"
-    id("io.micronaut.application") version "4.6.2"
+    id("io.micronaut.application") version "5.0.2"
     id("org.jmailen.kotlinter") version "5.6.0"
-    id("io.gitlab.arturbosch.detekt") version "1.23.8"
+    id("dev.detekt") version "2.0.0-alpha.6"
 }
 
 version = "0.1"
@@ -32,7 +32,7 @@ dependencies {
     implementation("dev.forkhandles:result4k")
 
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+    runtimeOnly("tools.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.strikt:strikt-core:0.35.1")
     testImplementation("dev.forkhandles:result4k-strikt")
@@ -44,12 +44,12 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion("21")
+    sourceCompatibility = JavaVersion.toVersion("25")
 }
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -58,7 +58,7 @@ kotlinter {
 }
 
 detekt {
-    toolVersion = "1.23.8"
+    toolVersion = "2.0.0-alpha.6"
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
@@ -72,7 +72,7 @@ micronaut {
 }
 
 tasks.named<io.micronaut.gradle.docker.NativeImageDockerfile>("dockerfileNative") {
-    jdkVersion = "21"
+    jdkVersion = "25"
 }
 
 

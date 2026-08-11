@@ -1,8 +1,8 @@
-performance: 
-  SpreadOperator: 
+performance:
+  SpreadOperator:
     excludes: ['**/**Command**']
-    
-style: 
+
+style:
   ReturnCount:
     max: 4
   MaxLineLength:
@@ -10,5 +10,4 @@ style:
 
 complexity:
   NestedBlockDepth:
-    threshold: 5
-    
+    allowedDepth: 5

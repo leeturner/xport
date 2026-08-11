@@ -328,7 +328,8 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
         // Parse the tweet date to get the expected filename
         val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
+        val tweetWrapper =
+            checkNotNull(objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java))[0]
         val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
         val expectedFileName = formatDateForFileName(createdAt) + ".md"
 
@@ -437,7 +438,8 @@ class ConvertTweetJsonToMarkdownTaskTest {
         isFiltered: Boolean = false,
     ) {
         val tweetJson = tweetJsonResourceFile.readText()
-        val tweetWrapper = objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java)[0]
+        val tweetWrapper =
+            checkNotNull(objectMapper.readValue(tweetJson, Array<TweetWrapper>::class.java))[0]
         val createdAt = parseTweetDate(tweetWrapper.tweet.createdAt)
         val expectedFileName = formatDateForFileName(createdAt) + ".md"
 

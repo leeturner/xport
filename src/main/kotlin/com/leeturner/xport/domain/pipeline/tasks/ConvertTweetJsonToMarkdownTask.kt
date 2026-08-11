@@ -38,7 +38,9 @@ class ConvertTweetJsonToMarkdownTask(
 
         return try {
             val tweetJsonContent = Files.readString(tweetJsonFile)
-            val tweets = objectMapper.readValue(tweetJsonContent, Array<TweetWrapper>::class.java)
+            val tweets =
+                objectMapper.readValue(tweetJsonContent, Array<TweetWrapper>::class.java)
+                    ?: return Failure(IllegalStateException("tweet json file could not be parsed"))
 
             // Create output directory if it doesn't exist
             val outputPath = get(outputDirectory)
