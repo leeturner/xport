@@ -1,7 +1,7 @@
 import org.jmailen.gradle.kotlinter.support.ReporterType
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.4.10"
+    id("org.jetbrains.kotlin.jvm") version "2.4.20"
     id("org.jetbrains.kotlin.kapt") version "2.4.10"
     id("org.jetbrains.kotlin.plugin.allopen") version "2.4.20"
     id("com.gradleup.shadow") version "9.6.1"
