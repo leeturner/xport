@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
+import com.leeturner.xport.domain.model.Media
 import com.leeturner.xport.domain.model.Tweet
 import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
@@ -115,43 +116,11 @@ fun Tweet.generateMarkdown(context: Context) =
         appendLine()
 
         var text = fullText
-        // process the media urls in the tweet text and replace them with markdown images
-        entities.media.forEach { mediaItem ->
-            // the name of the image file is the id of the tweet and then the name of the media file
-            val mediaFileName = mediaItem.mediaUrlHttps.substring(mediaItem.mediaUrlHttps.lastIndexOf('/') + 1)
-            val localMediaFileName = "$id-$mediaFileName"
-
-            // If mediaPath is provided in the context, prepend it to the image filename
-            val mediaPath = context.parameters["mediaPath"]
-            val imageReference = mediaPath?.let { "![]($it/$localMediaFileName)" } ?: "![]($localMediaFileName)"
-
-            // let's see if there is a video associated to this tweet
-            val extendedMediaItem =
-                extendedEntities?.media?.firstOrNull { extendedMediaItem ->
-                    extendedMediaItem.mediaUrlHttps == mediaItem.mediaUrlHttps
-                }
-            val mp4Reference =
-                extendedMediaItem?.let { mediaItem ->
-                    mediaItem.videoInfo
-                        ?.variants
-                        ?.firstOrNull { variant ->
-                            variant.contentType == "video/mp4"
-                        }?.let { mp4 ->
-                            val mp4FileName = mp4.url.substring(mp4.url.lastIndexOf('/') + 1)
-                            val localMp4FileName = "$id-$mp4FileName"
-                            mediaPath?.let { "$it/$localMp4FileName" } ?: localMp4FileName
-                        }
-                }
-
-            if (mp4Reference != null) {
-                text =
-                    text.replace(
-                        mediaItem.url,
-                        """<video controls="" src="$mp4Reference" style="width: 100%; height: 100%; background-color: black;"></video>""",
-                    )
-            } else {
-                text = text.replace(mediaItem.url, imageReference)
-            }
+        // extended_entities lists every photo/video in the tweet, entities only the first. They all share one t.co url,
+        // so replace that url once with all of them
+        val mediaPath = context.parameters["mediaPath"]
+        extendedEntities?.media.orEmpty().ifEmpty { entities.media }.groupBy { it.url }.forEach { (url, mediaItems) ->
+            text = text.replace(url, mediaItems.joinToString(" ") { it.toMarkdown(id, mediaPath) })
         }
 
         // process the generic urls in the tweet text and replace them with the full urls
@@ -166,3 +135,18 @@ fun Tweet.generateMarkdown(context: Context) =
             appendLine("In reply to [this post](https://x.com/$inReplyToScreenName/status/$inReplyToStatusId) by @$inReplyToScreenName")
         }
     }
+
+private fun Media.toMarkdown(
+    tweetId: String,
+    mediaPath: String?,
+): String {
+    val mp4 = videoInfo?.variants?.firstOrNull { it.contentType == "video/mp4" }
+    // the local media file is named with the id of the tweet and then the name of the remote file
+    val localFileName = "$tweetId-${(mp4?.url ?: mediaUrlHttps).substringAfterLast('/')}"
+    val reference = mediaPath?.let { "$it/$localFileName" } ?: localFileName
+    return if (mp4 != null) {
+        """<video controls="" src="$reference" style="width: 100%; height: 100%; background-color: black;"></video>"""
+    } else {
+        "![]($reference)"
+    }
+}

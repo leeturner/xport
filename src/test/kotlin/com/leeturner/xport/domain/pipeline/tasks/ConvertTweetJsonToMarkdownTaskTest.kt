@@ -212,6 +212,23 @@ class ConvertTweetJsonToMarkdownTaskTest {
     }
 
     @Test
+    fun `every photo in a tweet with multiple photos is included in the markdown`(resourceLoader: ResourceLoader) {
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val tweetJsonResourceFile =
+            resourceLoader.createTweetsJsonFile(
+                "classpath:archive-content/tweet-json-file-single-tweet-with-multiple-photos.json",
+            )
+
+        val result = worker.run(context)
+
+        expectThat(result).isRight()
+        resourceLoader.expectMarkdownMatches(
+            tweetJsonResourceFile,
+            "classpath:expected/tweet-markdown-file-single-tweet-with-multiple-photos.md",
+        )
+    }
+
+    @Test
     fun `the tweet json file is converted to markdown files and media urls include the media path`(resourceLoader: ResourceLoader) {
         // Given a context with a media path
         val context =
