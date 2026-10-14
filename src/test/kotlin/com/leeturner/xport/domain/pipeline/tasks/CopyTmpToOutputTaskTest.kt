@@ -2,16 +2,13 @@ package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.createTweetsMediaDirectoryAndAddSampleData
-import com.leeturner.xport.domain.pipeline.Context
-import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import strikt.api.expectThat
-import strikt.assertions.isA
 import strikt.assertions.isEqualTo
-import strikt.assertions.message
 import java.io.File
 import java.nio.file.Path
 
@@ -29,36 +26,9 @@ class CopyTmpToOutputTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected outputDirectory parameter are not in the context`() {
-        val context = Context(mapOf("tmpDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called outputDirectory provided. Please provide a outputDirectory parameter in the context"
-    }
-
-    @Test
-    fun `an error is returned when expected tmpDirectory parameter are not in the context`() {
-        val context = Context(mapOf("outputDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
-    }
-
-    @Test
     fun `the tmp directory is copied to the output directory`() {
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tmpDir.toString(),
-                    "outputDirectory" to outputDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tmpDir, outputDirectory = outputDir)
 
         // Create some test files in the tmp directory
         val dataDir = tmpDir.createDataDirectory().toPath()

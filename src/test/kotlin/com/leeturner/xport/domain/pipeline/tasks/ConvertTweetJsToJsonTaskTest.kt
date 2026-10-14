@@ -1,8 +1,8 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
-import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import com.leeturner.xport.toFile
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -30,19 +30,8 @@ class ConvertTweetJsToJsonTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected tmpDirectory parameter are not in the context`() {
-        val context = Context()
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
-    }
-
-    @Test
     fun `an error is returned if the tweet js file is not in the tmp directory`() {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
 
         val result = worker.run(context)
 
@@ -55,7 +44,7 @@ class ConvertTweetJsToJsonTaskTest {
 
     @Test
     fun `the tweets file is updated and saved to a json file`(resourceLoader: ResourceLoader) {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
 
         // Given a tweet.js file exists in the tmp directory
         val tweetJsResourceFile = resourceLoader.toFile("classpath:archive-content/raw-tweet-file-single-tweet.js")

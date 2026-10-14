@@ -1,9 +1,9 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.createDataDirectory
-import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import com.leeturner.xport.toFile
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -29,36 +29,9 @@ class CopyTweetJsFileTaskTest {
     }
 
     @Test
-    fun `a failure is returned when expected tmpDirectory parameter are not in the context`() {
-        val context = Context(mapOf("outputDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
-    }
-
-    @Test
-    fun `a failure is returned when expected archiveDirectory parameter are not in the context`() {
-        val context = Context(mapOf("currentDirectory" to "foo", "tmpDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
-    }
-
-    @Test
     fun `a failure is returned when the tweet js file does not exist in the current data directory`() {
         val context =
-            Context(
-                mapOf(
-                    "archiveDirectory" to archiveDir.toString(),
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(archiveDirectory = archiveDir, tmpDirectory = tempDir)
 
         archiveDir.createDataDirectory()
 
@@ -74,12 +47,7 @@ class CopyTweetJsFileTaskTest {
     @Test
     fun `the tweets file is copied from the data directory to the tmp directory`(resourceLoader: ResourceLoader) {
         val context =
-            Context(
-                mapOf(
-                    "archiveDirectory" to archiveDir.toString(),
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(archiveDirectory = archiveDir, tmpDirectory = tempDir)
 
         // given a directory and a file inside current directory
         val dataDirectory = archiveDir.createDataDirectory()

@@ -68,19 +68,16 @@ class XportCommand
             }
 
             try {
-                // Create the context with the necessary parameters
-                val contextParams =
-                    buildMap {
-                        put("archiveDirectory", archiveDirectory.absolutePath)
-                        put("tmpDirectory", tmpDir.absolutePath)
-                        put("outputDirectory", outputDirectory.absolutePath)
-                        put("verbose", verbose.toString())
-                        put("filterReplies", filterReplies.toString())
-                        author?.let { put("author", it) }
-                        mediaPath?.let { put("mediaPath", it) }
-                    }
-
-                val context = Context(contextParams)
+                val context =
+                    Context(
+                        archiveDirectory = archiveDirectory.toPath().toAbsolutePath(),
+                        tmpDirectory = tmpDir.toPath(),
+                        outputDirectory = outputDirectory.toPath().toAbsolutePath(),
+                        verbose = verbose,
+                        filterReplies = filterReplies,
+                        author = author,
+                        mediaPath = mediaPath,
+                    )
 
                 // Execute the pipeline
                 val result = pipeline.execute(context)
