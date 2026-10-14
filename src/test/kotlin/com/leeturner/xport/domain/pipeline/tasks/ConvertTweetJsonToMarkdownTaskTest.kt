@@ -13,6 +13,7 @@ import jakarta.inject.Inject
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import strikt.api.expectThat
+import strikt.assertions.contains
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
@@ -386,6 +387,24 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val nonReplyContent = tempDir.resolve(nonReplyTweetPath).readText().trim()
         val expectedNonReplyContent = resourceLoader.toFile("classpath:expected/tweet-markdown-file-non-reply-tweet.md").readText().trim()
         expectThat(nonReplyContent).isEqualTo(expectedNonReplyContent)
+    }
+
+    @Test
+    fun `tweets posted in the same minute are written to separate markdown files`(resourceLoader: ResourceLoader) {
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        resourceLoader.createTweetsJsonFile(
+            "classpath:archive-content/tweet-json-file-multiple-tweets-same-minute.json",
+        )
+
+        val result = worker.run(context)
+
+        expectThat(result).isSuccess()
+        val firstTweet = tempDir.resolve("markdown/2024-12-16T09-40.md")
+        val secondTweet = tempDir.resolve("markdown/2024-12-16T09-40-1868592038075314401.md")
+        expectThat(firstTweet.exists()).isEqualTo(true)
+        expectThat(secondTweet.exists()).isEqualTo(true)
+        expectThat(firstTweet.readText()).contains("First tweet of a thread")
+        expectThat(secondTweet.readText()).contains("Second tweet of a thread")
     }
 
     @Test

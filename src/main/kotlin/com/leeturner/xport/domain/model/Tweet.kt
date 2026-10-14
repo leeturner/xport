@@ -20,6 +20,8 @@ data class Tweet(
     val lang: String,
     @JsonProperty("in_reply_to_user_id")
     val inReplyToUserId: String? = null,
+    @JsonProperty("in_reply_to_status_id_str")
+    val inReplyToStatusId: String? = null,
     @JsonProperty("in_reply_to_screen_name")
     val inReplyToScreenName: String? = null,
     @JsonProperty("extended_entities")
