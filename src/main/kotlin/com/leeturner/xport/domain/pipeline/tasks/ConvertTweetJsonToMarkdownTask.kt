@@ -147,7 +147,7 @@ fun Tweet.generateMarkdown(context: Context) =
                 text =
                     text.replace(
                         mediaItem.url,
-                        """<video controls="" src="$mp4Reference" style="width: 100%; height: 100%; background-color: black;">""",
+                        """<video controls="" src="$mp4Reference" style="width: 100%; height: 100%; background-color: black;"></video>""",
                     )
             } else {
                 text = text.replace(mediaItem.url, imageReference)
