@@ -1,12 +1,12 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.exists
 import com.leeturner.xport.domain.pipeline.isVerbose
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.onFailure
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
@@ -14,9 +14,9 @@ import java.nio.file.Paths.get
 class CopyTmpToOutputTask : Task {
     override fun getDescription() = "Copy everything from the tmp directory to the output directory"
 
-    override fun run(context: Context): Result<Unit, Exception> {
-        val outputDirectory = context.exists("outputDirectory").onFailure { exception -> return exception }
-        val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
+    override fun run(context: Context): Either<Exception, Unit> {
+        val outputDirectory = context.exists("outputDirectory").getOrElse { exception -> return exception.left() }
+        val tmpDirectory = context.exists("tmpDirectory").getOrElse { exception -> return exception.left() }
 
         val sourceDir = get(tmpDirectory)
         val destinationDir = get(outputDirectory)
@@ -41,9 +41,9 @@ class CopyTmpToOutputTask : Task {
                 println("Successfully copied tmp directory to output directory")
             }
 
-            Success(Unit)
+            Unit.right()
         } catch (e: IOException) {
-            Failure(e)
+            e.left()
         }
     }
 }

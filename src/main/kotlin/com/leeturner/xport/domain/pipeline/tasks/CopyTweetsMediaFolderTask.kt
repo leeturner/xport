@@ -1,12 +1,12 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.exists
 import com.leeturner.xport.domain.pipeline.isVerbose
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.onFailure
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
@@ -15,14 +15,14 @@ import kotlin.io.path.exists
 class CopyTweetsMediaFolderTask : Task {
     override fun getDescription() = "Copy the tweets_media folder and its contents from the current directory to the tmp directory"
 
-    override fun run(context: Context): Result<Unit, Exception> {
-        val tmpDirectory = context.exists("tmpDirectory").onFailure { exception -> return exception }
-        val archiveDirectory = context.exists("archiveDirectory").onFailure { exception -> return exception }
+    override fun run(context: Context): Either<Exception, Unit> {
+        val tmpDirectory = context.exists("tmpDirectory").getOrElse { exception -> return exception.left() }
+        val archiveDirectory = context.exists("archiveDirectory").getOrElse { exception -> return exception.left() }
 
         // Check if the tweets_media directory exists in the archiveDirectory data directory
         val sourceDir = get(archiveDirectory, "data", "tweets_media")
         if (!sourceDir.exists()) {
-            return Failure(IllegalStateException("tweets_media directory does not exist in the current data directory"))
+            return IllegalStateException("tweets_media directory does not exist in the current data directory").left()
         }
 
         val destinationDir = get(tmpDirectory, "tweets_media")
@@ -52,9 +52,9 @@ class CopyTweetsMediaFolderTask : Task {
                 println("Successfully copied tweet media directory to tmp directory")
             }
 
-            Success(Unit)
+            Unit.right()
         } catch (e: IOException) {
-            Failure(e)
+            e.left()
         }
     }
 }

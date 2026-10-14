@@ -1,9 +1,8 @@
 package com.leeturner.xport.domain.pipeline.tasks
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import com.leeturner.xport.toFile
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -30,8 +29,7 @@ class DeleteTweetsJsonFileTaskTest {
         val context = Context(mapOf("outputDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -49,8 +47,7 @@ class DeleteTweetsJsonFileTaskTest {
         val result = worker.run(context)
 
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweets.json file does not exist in the tmp directory"
@@ -73,7 +70,7 @@ class DeleteTweetsJsonFileTaskTest {
 
         // validate the tweets.json file is deleted from the directory
         val tempFile = tmpDirectory.resolve("tweets.json").toFile()
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
         expectThat(tempFile.exists()).isEqualTo(false)
     }
 }

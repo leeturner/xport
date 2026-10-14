@@ -1,8 +1,8 @@
 package com.leeturner.xport.domain.pipeline
 
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 
 data class Context(
     val parameters: Map<String, String> = emptyMap(),
@@ -10,16 +10,14 @@ data class Context(
 
 /**
  * Extension function to retrieve the value of a parameter from the context.
- * Returns a Result wrapping either the value (if present) or an exception (if missing).
+ * Returns an Either wrapping either the value (if present) or an exception (if missing).
  */
-fun Context.exists(parameterName: String): Result<String, IllegalStateException> =
+fun Context.exists(parameterName: String): Either<IllegalStateException, String> =
     parameters[parameterName]
-        ?.let { Success(it) }
-        ?: Failure(
-            IllegalStateException(
-                "No parameter called $parameterName provided. Please provide a $parameterName parameter in the context",
-            ),
-        )
+        ?.right()
+        ?: IllegalStateException(
+            "No parameter called $parameterName provided. Please provide a $parameterName parameter in the context",
+        ).left()
 
 /**
  * Extension function to retrieve the value of the 'verbose' parameter.

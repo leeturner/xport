@@ -1,10 +1,9 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import com.leeturner.xport.toFile
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
@@ -35,8 +34,7 @@ class ConvertTweetJsToJsonTaskTest {
         val context = Context()
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -49,8 +47,7 @@ class ConvertTweetJsToJsonTaskTest {
         val result = worker.run(context)
 
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweets.js file does not exist in the tmp directory"
@@ -73,7 +70,7 @@ class ConvertTweetJsToJsonTaskTest {
         val tweetJsonFile = tempDir.resolve("tweets.json")
         val tweetJsonFileContent = tweetJsonFile.readText()
 
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
         expectThat(tweetJsonFile.exists()).isEqualTo(true)
         JSONAssert.assertEquals(tweetJsonFileContent, tweetJsonResourceFile.readText(), true)
     }

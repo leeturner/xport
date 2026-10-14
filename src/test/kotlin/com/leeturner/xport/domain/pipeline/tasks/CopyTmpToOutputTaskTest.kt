@@ -3,9 +3,8 @@ package com.leeturner.xport.domain.pipeline.tasks
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.createTweetsMediaDirectoryAndAddSampleData
 import com.leeturner.xport.domain.pipeline.Context
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -34,8 +33,7 @@ class CopyTmpToOutputTaskTest {
         val context = Context(mapOf("tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called outputDirectory provided. Please provide a outputDirectory parameter in the context"
@@ -46,8 +44,7 @@ class CopyTmpToOutputTaskTest {
         val context = Context(mapOf("outputDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -73,7 +70,7 @@ class CopyTmpToOutputTaskTest {
 
         val result = worker.run(context)
 
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Verify the files were copied to the output directory
         val outputTestFile = File(outputDir.toFile(), "test.txt")
