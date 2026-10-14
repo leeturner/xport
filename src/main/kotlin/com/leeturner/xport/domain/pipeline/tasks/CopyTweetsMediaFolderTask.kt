@@ -37,17 +37,19 @@ class CopyTweetsMediaFolderTask : Task {
             }
 
             // Copy all files from the source directory to the destination directory
-            Files.walk(sourceDir).forEach { sourcePath ->
-                if (!Files.isDirectory(sourcePath)) {
-                    val relativePath = sourceDir.relativize(sourcePath)
-                    val destinationPath = destinationDir.resolve(relativePath)
+            Files.walk(sourceDir).use { paths ->
+                paths.forEach { sourcePath ->
+                    if (!Files.isDirectory(sourcePath)) {
+                        val relativePath = sourceDir.relativize(sourcePath)
+                        val destinationPath = destinationDir.resolve(relativePath)
 
-                    // Create parent directories if they don't exist
-                    if (!Files.exists(destinationPath.parent)) {
-                        Files.createDirectories(destinationPath.parent)
+                        // Create parent directories if they don't exist
+                        if (!Files.exists(destinationPath.parent)) {
+                            Files.createDirectories(destinationPath.parent)
+                        }
+
+                        Files.copy(sourcePath, destinationPath)
                     }
-
-                    Files.copy(sourcePath, destinationPath)
                 }
             }
 
