@@ -10,7 +10,6 @@ import com.leeturner.xport.domain.pipeline.isVerbose
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths.get
-import kotlin.io.path.copyTo
 
 class ConvertTweetJsToJsonTask : Task {
     override fun getDescription() = "Convert the tweet.js file to a JSON file"
@@ -27,7 +26,6 @@ class ConvertTweetJsToJsonTask : Task {
         val tweetJsonFile = get(tmpDirectory, "tweets.json")
 
         return try {
-            tweetJsFile.copyTo(tweetJsonFile, overwrite = true)
             val tweetJsContent = Files.readString(tweetJsFile)
             val updatedContent = tweetJsContent.dropWhile { it != '[' }
             Files.writeString(tweetJsonFile, updatedContent)
