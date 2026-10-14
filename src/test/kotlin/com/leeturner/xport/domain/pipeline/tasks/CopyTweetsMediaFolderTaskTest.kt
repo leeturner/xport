@@ -15,6 +15,7 @@ import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import strikt.assertions.message
 import java.nio.file.Path
+import kotlin.io.path.exists
 
 @MicronautTest
 class CopyTweetsMediaFolderTaskTest {
@@ -52,7 +53,7 @@ class CopyTweetsMediaFolderTaskTest {
     }
 
     @Test
-    fun `an error is returned when the tweets_media directory does not exist`() {
+    fun `nothing is copied when the tweets_media directory does not exist`() {
         val context =
             Context(
                 mapOf(
@@ -66,11 +67,8 @@ class CopyTweetsMediaFolderTaskTest {
 
         val result = worker.run(context)
 
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "tweets_media directory does not exist in the current data directory"
+        expectThat(result).isRight()
+        expectThat(tempDir.resolve("tweets_media").exists()).isEqualTo(false)
     }
 
     @Test
