@@ -17,6 +17,7 @@ import java.nio.file.Files
 import java.nio.file.Paths.get
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
 
 class ConvertTweetJsonToMarkdownTask(
@@ -81,6 +82,8 @@ class ConvertTweetJsonToMarkdownTask(
             }
             Unit.right()
         } catch (e: IOException) {
+            e.left()
+        } catch (e: DateTimeParseException) {
             e.left()
         }
     }
