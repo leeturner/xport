@@ -50,20 +50,9 @@ class XportCommand
         private lateinit var outputDirectory: File
 
         override fun call(): Int {
-            // Validate that the output directory exists.  Exit if not
-            if (outputDirectory.doesNotExist() || outputDirectory.isNotEmpty()) {
-                err.println("The output directory does not exist. This directory must exist and be empty: $outputDirectory")
-                return 1
-            }
-
-            // Validate that the data directory exists in the archive directory.  Exit if not
-            if (archiveDirectory.doesNotExist() || archiveDirectory.doesNotContainsDataDirectory()) {
-                err.println(
-                    buildString {
-                        append("The archive directory does not exist. ")
-                        append("This directory must exist and contain the data directory: $archiveDirectory")
-                    },
-                )
+            // Validate the output and archive directories.  Exit if either is invalid
+            validateDirectories()?.let { error ->
+                err.println(error)
                 return 1
             }
 
@@ -121,6 +110,29 @@ class XportCommand
                 exitProcess(exitCode ?: 0)
             }
         }
+
+        private fun validateDirectories(): String? =
+            when {
+                outputDirectory.doesNotExist() -> {
+                    "The output directory does not exist. This directory must exist and be empty: $outputDirectory"
+                }
+
+                outputDirectory.isNotEmpty() -> {
+                    "The output directory is not empty. This directory must exist and be empty: $outputDirectory"
+                }
+
+                archiveDirectory.doesNotExist() -> {
+                    "The archive directory does not exist. This directory must exist and contain the data directory: $archiveDirectory"
+                }
+
+                archiveDirectory.doesNotContainsDataDirectory() -> {
+                    "The archive directory does not contain the data directory: $archiveDirectory"
+                }
+
+                else -> {
+                    null
+                }
+            }
 
         private fun File.doesNotExist(): Boolean = !exists()
 

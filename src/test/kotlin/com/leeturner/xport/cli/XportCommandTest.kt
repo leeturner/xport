@@ -47,7 +47,7 @@ class XportCommandTest {
         val exitCode = PicocliRunner.call(XportCommand::class.java, *args)
 
         expectThat(exitCode).isEqualTo(1)
-        expectThat(outputStream.toString()).contains("The output directory does not exist. This directory must exist and be empty")
+        expectThat(outputStream.toString()).contains("The output directory is not empty. This directory must exist and be empty")
     }
 
     @Test
@@ -75,7 +75,7 @@ class XportCommandTest {
         expectThat(exitCode).isEqualTo(1)
         expectThat(
             outputStream.toString(),
-        ).contains("The archive directory does not exist. This directory must exist and contain the data directory")
+        ).contains("The archive directory does not contain the data directory")
     }
 
     @Test
