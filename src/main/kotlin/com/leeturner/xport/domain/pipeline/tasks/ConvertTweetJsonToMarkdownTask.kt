@@ -1,15 +1,15 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.leeturner.xport.domain.model.Tweet
 import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.exists
 import com.leeturner.xport.domain.pipeline.isFilterReplies
 import com.leeturner.xport.domain.pipeline.isVerbose
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.onFailure
 import io.micronaut.serde.ObjectMapper
 import java.io.IOException
 import java.nio.file.Files
@@ -23,24 +23,24 @@ class ConvertTweetJsonToMarkdownTask(
 ) : Task {
     override fun getDescription() = "Convert tweet JSON to markdown files"
 
-    override fun run(context: Context): Result<Unit, Exception> {
+    override fun run(context: Context): Either<Exception, Unit> {
         val tmpDirectory =
-            context.exists("tmpDirectory").onFailure { exception ->
-                return exception
+            context.exists("tmpDirectory").getOrElse { exception ->
+                return exception.left()
             }
         val outputDirectory = "$tmpDirectory/markdown"
 
         val tweetJsonFile = get(tmpDirectory, "tweets.json")
         // Check if the tweets js file exists in the tmp directory
         if (!Files.exists(tweetJsonFile)) {
-            return Failure(IllegalStateException("tweet json file does not exist in the tmp directory"))
+            return IllegalStateException("tweet json file does not exist in the tmp directory").left()
         }
 
         return try {
             val tweetJsonContent = Files.readString(tweetJsonFile)
             val tweets =
                 objectMapper.readValue(tweetJsonContent, Array<TweetWrapper>::class.java)
-                    ?: return Failure(IllegalStateException("tweet json file could not be parsed"))
+                    ?: return IllegalStateException("tweet json file could not be parsed").left()
 
             // Create output directory if it doesn't exist
             val outputPath = get(outputDirectory)
@@ -75,9 +75,9 @@ class ConvertTweetJsonToMarkdownTask(
             if (context.isVerbose()) {
                 println("Successfully converted tweet JSON file to markdown files")
             }
-            Success(Unit)
+            Unit.right()
         } catch (e: IOException) {
-            Failure(e)
+            e.left()
         }
     }
 }

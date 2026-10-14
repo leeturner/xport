@@ -5,9 +5,8 @@ import com.leeturner.xport.assertTweetMediaDirExists
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.createTweetsMediaDirectoryAndAddSampleData
 import com.leeturner.xport.domain.pipeline.Context
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -35,8 +34,7 @@ class CopyTweetsMediaFolderTaskTest {
         val context = Context(mapOf("outputDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -47,8 +45,7 @@ class CopyTweetsMediaFolderTaskTest {
         val context = Context(mapOf("outputDirectory" to "foo", "tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
@@ -70,8 +67,7 @@ class CopyTweetsMediaFolderTaskTest {
         val result = worker.run(context)
 
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweets_media directory does not exist in the current data directory"
@@ -94,7 +90,7 @@ class CopyTweetsMediaFolderTaskTest {
 
         val result = worker.run(context)
 
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
         // Validate the tweets_media directory and its files are in the tempDir
         tempDir.assertTweetMediaDirExists()
         tempDir.assertTweetMediaDirDataCopied()

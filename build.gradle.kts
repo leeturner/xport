@@ -28,14 +28,12 @@ dependencies {
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
-    implementation(platform("dev.forkhandles:forkhandles-bom:3.1.0.0"))
-    implementation("dev.forkhandles:result4k")
+    implementation("io.arrow-kt:arrow-core:2.2.3")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("tools.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.strikt:strikt-core:0.35.1")
-    testImplementation("dev.forkhandles:result4k-strikt")
     testImplementation("org.skyscreamer:jsonassert:2.0-rc1")
 }
 

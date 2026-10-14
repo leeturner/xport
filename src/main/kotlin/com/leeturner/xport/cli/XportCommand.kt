@@ -1,9 +1,8 @@
 package com.leeturner.xport.cli
 
+import arrow.core.Either
 import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.Pipeline
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Success
 import io.micronaut.configuration.picocli.PicocliRunner
 import jakarta.inject.Inject
 import picocli.CommandLine.Command
@@ -97,13 +96,13 @@ class XportCommand
                 // Execute the pipeline
                 val result = pipeline.execute(context)
                 when (result) {
-                    is Success -> {
+                    is Either.Right -> {
                         println("Successfully processed X/Twitter archive")
                         return 0
                     }
 
-                    is Failure -> {
-                        err.println("Error processing X/Twitter archive: ${result.reason}")
+                    is Either.Left -> {
+                        err.println("Error processing X/Twitter archive: ${result.value}")
                         return 1
                     }
                 }

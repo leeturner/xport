@@ -1,34 +1,34 @@
 package com.leeturner.xport.domain.pipeline
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.leeturner.xport.domain.pipeline.tasks.Task
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.onFailure
 import jakarta.inject.Singleton
 
 @Singleton
 class Pipeline(
     private val tasks: List<Task>,
 ) {
-    fun execute(context: Context): Result<Unit, Exception> {
-        val verbose = context.exists("verbose").onFailure { exception -> return exception }.toBoolean()
+    fun execute(context: Context): Either<Exception, Unit> {
+        val verbose = context.exists("verbose").getOrElse { exception -> return exception.left() }.toBoolean()
         tasks.forEach { task ->
             if (verbose) {
                 println("Executing task: ${task.getName()} - ${task.getDescription()}")
             }
             val result = task.run(context)
             when (result) {
-                is Failure -> {
-                    println("Task ${task.getName()} failed: ${result.reason}")
+                is Either.Left -> {
+                    println("Task ${task.getName()} failed: ${result.value}")
                     return result
                 }
 
-                is Success -> {
+                is Either.Right -> {
                     // Continue to the next task
                 }
             }
         }
-        return Success(Unit)
+        return Unit.right()
     }
 }
