@@ -8,7 +8,6 @@ import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.exists
 import com.leeturner.xport.domain.pipeline.isVerbose
 import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Paths.get
 import kotlin.io.path.exists
 
@@ -31,27 +30,8 @@ class CopyTweetsMediaFolderTask : Task {
         val destinationDir = get(tmpDirectory, "tweets_media")
 
         return try {
-            // Create the destination directory if it doesn't exist
-            if (!destinationDir.exists()) {
-                Files.createDirectory(destinationDir)
-            }
-
-            // Copy all files from the source directory to the destination directory
-            Files.walk(sourceDir).use { paths ->
-                paths.forEach { sourcePath ->
-                    if (!Files.isDirectory(sourcePath)) {
-                        val relativePath = sourceDir.relativize(sourcePath)
-                        val destinationPath = destinationDir.resolve(relativePath)
-
-                        // Create parent directories if they don't exist
-                        if (!Files.exists(destinationPath.parent)) {
-                            Files.createDirectories(destinationPath.parent)
-                        }
-
-                        Files.copy(sourcePath, destinationPath)
-                    }
-                }
-            }
+            // Copy all files from the source directory to the destination directory, creating directories as needed
+            sourceDir.toFile().copyRecursively(destinationDir.toFile())
 
             if (context.isVerbose()) {
                 println("Successfully copied tweet media directory to tmp directory")

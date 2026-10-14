@@ -57,21 +57,8 @@ data class Media(
     val idStr: String,
     @JsonProperty("expanded_url")
     val expandedUrl: String? = null,
-//    @JsonProperty("source_status_id")
-//    val sourceStatusId: Long? = null,
-//    val indices: List<String>? = null,
     @JsonProperty("video_info")
     val videoInfo: VideoInfo? = null,
-//    @JsonProperty("source_user_id")
-//    val sourceUserId: Long? = null,
-//    val sizes: Sizes? = null,
-//    val type: String? = null,
-//    @JsonProperty("source_status_id_str")
-//    val sourceStatusIdStr: String? = null,
-//    @JsonProperty("display_url")
-//    val displayUrl: String? = null,
-//    @JsonProperty("source_user_id_str")
-//    val sourceUserIdStr: String? = null,
 )
 
 @Serdeable
@@ -88,18 +75,3 @@ data class VideoVariant(
     val contentType: String,
     val url: String,
 )
-
-// @Serdeable
-// data class Sizes(
-//    val medium: Size? = null,
-//    val large: Size? = null,
-//    val small: Size? = null,
-//    val thumb: Size? = null,
-// )
-
-// @Serdeable
-// data class Size(
-//    val w: String? = null,
-//    val h: String? = null,
-//    val resize: String? = null,
-// )
