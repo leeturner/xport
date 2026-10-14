@@ -8,7 +8,6 @@ import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.domain.pipeline.exists
 import com.leeturner.xport.domain.pipeline.isVerbose
 import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Paths.get
 
 class CopyTmpToOutputTask : Task {
@@ -22,22 +21,8 @@ class CopyTmpToOutputTask : Task {
         val destinationDir = get(outputDirectory)
 
         return try {
-            // Copy all files from the source directory to the destination directory
-            Files.walk(sourceDir).use { paths ->
-                paths.forEach { sourcePath ->
-                    if (!Files.isDirectory(sourcePath)) {
-                        val relativePath = sourceDir.relativize(sourcePath)
-                        val destinationPath = destinationDir.resolve(relativePath)
-
-                        // Create parent directories if they don't exist
-                        if (!Files.exists(destinationPath.parent)) {
-                            Files.createDirectories(destinationPath.parent)
-                        }
-
-                        Files.copy(sourcePath, destinationPath)
-                    }
-                }
-            }
+            // Copy all files from the source directory to the destination directory, creating directories as needed
+            sourceDir.toFile().copyRecursively(destinationDir.toFile())
 
             if (context.isVerbose()) {
                 println("Successfully copied tmp directory to output directory")
