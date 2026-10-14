@@ -68,7 +68,10 @@ class ConvertTweetJsonToMarkdownTask(
                 val isReply = tweet.inReplyToUserId != null
                 val directory = if (isReply && context.isFilterReplies()) filteredDirectory else outputDirectory
 
-                val markdownFile = get(directory, "$fileName.md")
+                // Tweets posted in the same minute would share a file name, so suffix later ones with the tweet id
+                val markdownFile =
+                    get(directory, "$fileName.md").takeUnless { Files.exists(it) }
+                        ?: get(directory, "$fileName-${tweet.id}.md")
                 Files.writeString(markdownFile, markdownContent)
             }
 
@@ -159,7 +162,7 @@ fun Tweet.generateMarkdown(context: Context) =
         // Add tweet content
         appendLine(text)
         appendLine()
-        if (inReplyToScreenName != null) {
-            appendLine("In reply to [this post](https://x.com/$inReplyToScreenName/status/$inReplyToUserId) by @$inReplyToScreenName")
+        if (inReplyToScreenName != null && inReplyToStatusId != null) {
+            appendLine("In reply to [this post](https://x.com/$inReplyToScreenName/status/$inReplyToStatusId) by @$inReplyToScreenName")
         }
     }

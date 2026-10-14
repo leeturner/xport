@@ -48,6 +48,8 @@
       "favorite_count": "2",
       "id_str": "1868592038075314317",
       "in_reply_to_user_id": "1637899368010338306",
+      "in_reply_to_status_id": "1868580000000000001",
+      "in_reply_to_status_id_str": "1868580000000000001",
       "truncated": false,
       "retweet_count": "1",
       "id": "1868592038075314317",

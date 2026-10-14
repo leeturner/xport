@@ -1,0 +1,34 @@
+[
+  {
+    "tweet": {
+      "entities": {
+        "hashtags": [],
+        "symbols": [],
+        "user_mentions": [],
+        "urls": []
+      },
+      "truncated": false,
+      "id_str": "1868592038075314400",
+      "id": "1868592038075314400",
+      "created_at": "Mon Dec 16 09:40:05 +0000 2024",
+      "full_text": "First tweet of a thread",
+      "lang": "en"
+    }
+  },
+  {
+    "tweet": {
+      "entities": {
+        "hashtags": [],
+        "symbols": [],
+        "user_mentions": [],
+        "urls": []
+      },
+      "truncated": false,
+      "id_str": "1868592038075314401",
+      "id": "1868592038075314401",
+      "created_at": "Mon Dec 16 09:40:45 +0000 2024",
+      "full_text": "Second tweet of a thread",
+      "lang": "en"
+    }
+  }
+]

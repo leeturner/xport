@@ -11,4 +11,4 @@ You will be joining a great, supportive team and if you want to know more, pleas
 
 https://www.wiremock.io/careers/solutions-engineer
 
-In reply to [this post](https://x.com/wiremockorg/status/1637899368010338306) by @wiremockorg
+In reply to [this post](https://x.com/wiremockorg/status/1868580000000000001) by @wiremockorg
