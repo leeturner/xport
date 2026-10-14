@@ -6,6 +6,7 @@ import arrow.core.right
 import com.leeturner.xport.domain.pipeline.tasks.Task
 import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -17,7 +18,7 @@ import java.io.PrintStream
 class PipelineTest {
     @Test
     fun `pipeline leaves reporting a task failure to the caller`() {
-        val context = Context(mapOf("verbose" to "false"))
+        val context = testContext()
         val failingTask = Task { IllegalStateException("boom").left() }
         val stdout = ByteArrayOutputStream()
         val originalOut = System.out
@@ -38,14 +39,7 @@ class PipelineTest {
     fun `pipeline executes all tasks in order when all tasks succeed`() {
         // Given
         val context =
-            Context(
-                mapOf(
-                    "currentDirectory" to "/path/to/archive",
-                    "tmpDirectory" to "/path/to/tmp",
-                    "outputDirectory" to "/path/to/output",
-                    "verbose" to "false",
-                ),
-            )
+            testContext()
 
         val executionOrder = mutableListOf<String>()
 
@@ -99,14 +93,7 @@ class PipelineTest {
     fun `pipeline stops execution when a task fails`() {
         // Given
         val context =
-            Context(
-                mapOf(
-                    "currentDirectory" to "/path/to/archive",
-                    "tmpDirectory" to "/path/to/tmp",
-                    "outputDirectory" to "/path/to/output",
-                    "verbose" to "false",
-                ),
-            )
+            testContext()
 
         val executionOrder = mutableListOf<String>()
         val exception = Exception("Task failed")

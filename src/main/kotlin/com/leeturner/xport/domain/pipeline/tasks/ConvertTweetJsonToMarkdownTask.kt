@@ -1,20 +1,15 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import com.leeturner.xport.domain.model.Media
 import com.leeturner.xport.domain.model.Tweet
 import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
-import com.leeturner.xport.domain.pipeline.exists
-import com.leeturner.xport.domain.pipeline.isFilterReplies
-import com.leeturner.xport.domain.pipeline.isVerbose
 import io.micronaut.serde.ObjectMapper
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Paths.get
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -26,13 +21,10 @@ class ConvertTweetJsonToMarkdownTask(
     override fun getDescription() = "Convert tweet JSON to markdown files"
 
     override fun run(context: Context): Either<Exception, Unit> {
-        val tmpDirectory =
-            context.exists("tmpDirectory").getOrElse { exception ->
-                return exception.left()
-            }
-        val outputDirectory = "$tmpDirectory/markdown"
+        val tmpDirectory = context.tmpDirectory
+        val outputDirectory = tmpDirectory.resolve("markdown")
 
-        val tweetJsonFile = get(tmpDirectory, "tweets.json")
+        val tweetJsonFile = tmpDirectory.resolve("tweets.json")
         // Check if the tweets js file exists in the tmp directory
         if (!Files.exists(tweetJsonFile)) {
             return IllegalStateException("tweet json file does not exist in the tmp directory").left()
@@ -45,17 +37,15 @@ class ConvertTweetJsonToMarkdownTask(
                     ?: return IllegalStateException("tweet json file could not be parsed").left()
 
             // Create output directory if it doesn't exist
-            val outputPath = get(outputDirectory)
-            if (!Files.exists(outputPath)) {
-                Files.createDirectories(outputPath)
+            if (!Files.exists(outputDirectory)) {
+                Files.createDirectories(outputDirectory)
             }
 
             // Create filtered directory if filter-replies is enabled
-            val filteredDirectory = "$tmpDirectory/filtered"
-            if (context.isFilterReplies()) {
-                val filteredPath = get(filteredDirectory)
-                if (!Files.exists(filteredPath)) {
-                    Files.createDirectories(filteredPath)
+            val filteredDirectory = tmpDirectory.resolve("filtered")
+            if (context.filterReplies) {
+                if (!Files.exists(filteredDirectory)) {
+                    Files.createDirectories(filteredDirectory)
                 }
             }
 
@@ -68,16 +58,16 @@ class ConvertTweetJsonToMarkdownTask(
 
                 // Check if the tweet is a reply and if we should filter it
                 val isReply = tweet.inReplyToUserId != null
-                val directory = if (isReply && context.isFilterReplies()) filteredDirectory else outputDirectory
+                val directory = if (isReply && context.filterReplies) filteredDirectory else outputDirectory
 
                 // Tweets posted in the same minute would share a file name, so suffix later ones with the tweet id
                 val markdownFile =
-                    get(directory, "$fileName.md").takeUnless { Files.exists(it) }
-                        ?: get(directory, "$fileName-${tweet.id}.md")
+                    directory.resolve("$fileName.md").takeUnless { Files.exists(it) }
+                        ?: directory.resolve("$fileName-${tweet.id}.md")
                 Files.writeString(markdownFile, markdownContent)
             }
 
-            if (context.isVerbose()) {
+            if (context.verbose) {
                 println("Successfully converted tweet JSON file to markdown files")
             }
             Unit.right()
@@ -109,7 +99,7 @@ fun Tweet.generateMarkdown(context: Context) =
         appendLine("date: ${formatDateTimeWithSeconds(parseTweetDate(createdAt))}")
 
         // Only include author if provided in the context
-        context.parameters["author"]?.let { author ->
+        context.author?.let { author ->
             appendLine("author: $author")
         }
 
@@ -121,7 +111,7 @@ fun Tweet.generateMarkdown(context: Context) =
         var text = fullText
         // extended_entities lists every photo/video in the tweet, entities only the first. They all share one t.co url,
         // so replace that url once with all of them
-        val mediaPath = context.parameters["mediaPath"]
+        val mediaPath = context.mediaPath
         extendedEntities?.media.orEmpty().ifEmpty { entities.media }.groupBy { it.url }.forEach { (url, mediaItems) ->
             text = text.replace(url, mediaItems.joinToString(" ") { it.toMarkdown(id, mediaPath) })
         }

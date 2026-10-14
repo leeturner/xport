@@ -1,6 +1,7 @@
 package com.leeturner.xport
 
 import arrow.core.Either
+import com.leeturner.xport.domain.pipeline.Context
 import io.micronaut.core.io.ResourceLoader
 import strikt.api.Assertion
 import strikt.api.expectThat
@@ -8,6 +9,7 @@ import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.Path
 
 fun Path.createDataDirectory(): File {
     val dataDirectory = this.resolve("data").toFile()
@@ -56,3 +58,14 @@ fun ResourceLoader.toFile(resource: String): File = File(this.getResource(resour
 fun <L, R> Assertion.Builder<Either<L, R>>.isLeft(): Assertion.Builder<L> = isA<Either.Left<L>>().get { value }
 
 fun <L, R> Assertion.Builder<Either<L, R>>.isRight(): Assertion.Builder<R> = isA<Either.Right<R>>().get { value }
+
+// Directories a test doesn't set point nowhere, so a task reading the wrong one fails
+fun testContext(
+    archiveDirectory: Path = Path("unset-archive-directory"),
+    tmpDirectory: Path = Path("unset-tmp-directory"),
+    outputDirectory: Path = Path("unset-output-directory"),
+    verbose: Boolean = false,
+    filterReplies: Boolean = false,
+    author: String? = null,
+    mediaPath: String? = null,
+) = Context(archiveDirectory, tmpDirectory, outputDirectory, verbose, filterReplies, author, mediaPath)

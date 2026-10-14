@@ -1,9 +1,9 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.domain.model.TweetWrapper
-import com.leeturner.xport.domain.pipeline.Context
 import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import com.leeturner.xport.toFile
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.serde.ObjectMapper
@@ -42,24 +42,9 @@ class ConvertTweetJsonToMarkdownTaskTest {
     }
 
     @Test
-    fun `a failure is returned when expected tmpDirectory parameter is not in the context`() {
-        val context = Context(mapOf())
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
-    }
-
-    @Test
     fun `a failure is returned when the tweet json file does not exist in the tmp directory`() {
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         val result = worker.run(context)
 
@@ -72,7 +57,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
     @Test
     fun `a failure is returned when a tweet has an invalid created date`() {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
         tempDir.resolve("tweets.json").writeText(
             """
             [{"tweet": {"entities": {"urls": []}, "truncated": false, "id": "1", "created_at": "not a date",
@@ -89,7 +74,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
     @Test
     fun `the tweet json file is converted to markdown files`(resourceLoader: ResourceLoader) {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -114,12 +99,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `the tweet json file is converted to markdown files with custom author`(resourceLoader: ResourceLoader) {
         // Given a context with a custom author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                    "author" to "Custom Author",
-                ),
-            )
+            testContext(tmpDirectory = tempDir, author = "Custom Author")
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -144,11 +124,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `the tweet json file is converted to markdown files without author when no author is specified`(resourceLoader: ResourceLoader) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -173,11 +149,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `the tweet json file is converted to markdown files and urls are replaced with their full version`(resourceLoader: ResourceLoader) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -204,11 +176,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     ) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -231,7 +199,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
     @Test
     fun `every photo in a tweet with multiple photos is included in the markdown`(resourceLoader: ResourceLoader) {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
         val tweetJsonResourceFile =
             resourceLoader.createTweetsJsonFile(
                 "classpath:archive-content/tweet-json-file-single-tweet-with-multiple-photos.json",
@@ -250,12 +218,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `the tweet json file is converted to markdown files and media urls include the media path`(resourceLoader: ResourceLoader) {
         // Given a context with a media path
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                    "mediaPath" to "images",
-                ),
-            )
+            testContext(tmpDirectory = tempDir, mediaPath = "images")
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -282,11 +245,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     ) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -311,11 +270,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `the tweet json file is converted to markdown files and reply to links are added`(resourceLoader: ResourceLoader) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -340,12 +295,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `reply tweets are saved to the filtered directory when filter-replies is enabled`(resourceLoader: ResourceLoader) {
         // Given a context with filter-replies enabled
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                    "filterReplies" to "true",
-                ),
-            )
+            testContext(tmpDirectory = tempDir, filterReplies = true)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =
@@ -384,12 +334,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `multiple tweets are correctly filtered when filter-replies is enabled`(resourceLoader: ResourceLoader) {
         // Given a context with filter-replies enabled
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                    "filterReplies" to "true",
-                ),
-            )
+            testContext(tmpDirectory = tempDir, filterReplies = true)
 
         // Given a tweets.json file with multiple tweets exists in the tmp directory
         resourceLoader.createTweetsJsonFile(
@@ -423,7 +368,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
 
     @Test
     fun `tweets posted in the same minute are written to separate markdown files`(resourceLoader: ResourceLoader) {
-        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        val context = testContext(tmpDirectory = tempDir)
         resourceLoader.createTweetsJsonFile(
             "classpath:archive-content/tweet-json-file-multiple-tweets-same-minute.json",
         )
@@ -443,11 +388,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
     fun `hugo date issue`(resourceLoader: ResourceLoader) {
         // Given a context without an author
         val context =
-            Context(
-                mapOf(
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(tmpDirectory = tempDir)
 
         // Given a tweets.json file exists in the tmp directory
         val tweetJsonResourceFile =

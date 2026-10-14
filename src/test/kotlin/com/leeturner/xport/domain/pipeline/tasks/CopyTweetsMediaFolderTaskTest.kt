@@ -4,16 +4,13 @@ import com.leeturner.xport.assertTweetMediaDirDataCopied
 import com.leeturner.xport.assertTweetMediaDirExists
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.createTweetsMediaDirectoryAndAddSampleData
-import com.leeturner.xport.domain.pipeline.Context
-import com.leeturner.xport.isLeft
 import com.leeturner.xport.isRight
+import com.leeturner.xport.testContext
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import strikt.api.expectThat
-import strikt.assertions.isA
 import strikt.assertions.isEqualTo
-import strikt.assertions.message
 import java.nio.file.Path
 import kotlin.io.path.exists
 
@@ -31,36 +28,9 @@ class CopyTweetsMediaFolderTaskTest {
     }
 
     @Test
-    fun `an error is returned when expected tmpDirectory parameter are not in the context`() {
-        val context = Context(mapOf("outputDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
-    }
-
-    @Test
-    fun `an error is returned when expected archiveDirectory parameter are not in the context`() {
-        val context = Context(mapOf("outputDirectory" to "foo", "tmpDirectory" to "foo"))
-        val result = worker.run(context)
-        expectThat(result)
-            .isLeft()
-            .isA<IllegalStateException>()
-            .message isEqualTo
-            "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
-    }
-
-    @Test
     fun `nothing is copied when the tweets_media directory does not exist`() {
         val context =
-            Context(
-                mapOf(
-                    "archiveDirectory" to archiveDir.toString(),
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(archiveDirectory = archiveDir, tmpDirectory = tempDir)
 
         // Create the data directory but not the tweets_media directory
         archiveDir.createDataDirectory()
@@ -74,12 +44,7 @@ class CopyTweetsMediaFolderTaskTest {
     @Test
     fun `the tweets_media folder is copied from the current directory to the tmp directory`() {
         val context =
-            Context(
-                mapOf(
-                    "archiveDirectory" to archiveDir.toString(),
-                    "tmpDirectory" to tempDir.toString(),
-                ),
-            )
+            testContext(archiveDirectory = archiveDir, tmpDirectory = tempDir)
 
         // create the data directory
         val dataDir = archiveDir.createDataDirectory().toPath()

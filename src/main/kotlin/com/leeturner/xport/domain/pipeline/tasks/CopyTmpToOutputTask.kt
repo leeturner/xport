@@ -1,30 +1,23 @@
 package com.leeturner.xport.domain.pipeline.tasks
 
 import arrow.core.Either
-import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import com.leeturner.xport.domain.pipeline.Context
-import com.leeturner.xport.domain.pipeline.exists
-import com.leeturner.xport.domain.pipeline.isVerbose
 import java.io.IOException
-import java.nio.file.Paths.get
 
 class CopyTmpToOutputTask : Task {
     override fun getDescription() = "Copy everything from the tmp directory to the output directory"
 
     override fun run(context: Context): Either<Exception, Unit> {
-        val outputDirectory = context.exists("outputDirectory").getOrElse { exception -> return exception.left() }
-        val tmpDirectory = context.exists("tmpDirectory").getOrElse { exception -> return exception.left() }
-
-        val sourceDir = get(tmpDirectory)
-        val destinationDir = get(outputDirectory)
+        val sourceDir = context.tmpDirectory
+        val destinationDir = context.outputDirectory
 
         return try {
             // Copy all files from the source directory to the destination directory, creating directories as needed
             sourceDir.toFile().copyRecursively(destinationDir.toFile())
 
-            if (context.isVerbose()) {
+            if (context.verbose) {
                 println("Successfully copied tmp directory to output directory")
             }
 
