@@ -17,17 +17,9 @@ class Pipeline(
             if (verbose) {
                 println("Executing task: ${task.getName()} - ${task.getDescription()}")
             }
+            // Stop at the first failure; the caller reports it
             val result = task.run(context)
-            when (result) {
-                is Either.Left -> {
-                    println("Task ${task.getName()} failed: ${result.value}")
-                    return result
-                }
-
-                is Either.Right -> {
-                    // Continue to the next task
-                }
-            }
+            if (result.isLeft()) return result
         }
         return Unit.right()
     }
