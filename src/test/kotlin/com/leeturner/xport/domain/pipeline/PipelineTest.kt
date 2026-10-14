@@ -10,9 +10,30 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
 @MicronautTest
 class PipelineTest {
+    @Test
+    fun `pipeline leaves reporting a task failure to the caller`() {
+        val context = Context(mapOf("verbose" to "false"))
+        val failingTask = Task { IllegalStateException("boom").left() }
+        val stdout = ByteArrayOutputStream()
+        val originalOut = System.out
+        System.setOut(PrintStream(stdout))
+
+        val result =
+            try {
+                Pipeline(listOf(failingTask)).execute(context)
+            } finally {
+                System.setOut(originalOut)
+            }
+
+        expectThat(result).isLeft()
+        expectThat(stdout.toString()).isEqualTo("")
+    }
+
     @Test
     fun `pipeline executes all tasks in order when all tasks succeed`() {
         // Given

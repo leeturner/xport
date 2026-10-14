@@ -21,6 +21,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -67,6 +68,23 @@ class ConvertTweetJsonToMarkdownTaskTest {
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweet json file does not exist in the tmp directory"
+    }
+
+    @Test
+    fun `a failure is returned when a tweet has an invalid created date`() {
+        val context = Context(mapOf("tmpDirectory" to tempDir.toString()))
+        tempDir.resolve("tweets.json").writeText(
+            """
+            [{"tweet": {"entities": {"urls": []}, "truncated": false, "id": "1", "created_at": "not a date",
+              "full_text": "Hello", "lang": "en"}}]
+            """.trimIndent(),
+        )
+
+        val result = worker.run(context)
+
+        expectThat(result)
+            .isLeft()
+            .isA<DateTimeParseException>()
     }
 
     @Test
