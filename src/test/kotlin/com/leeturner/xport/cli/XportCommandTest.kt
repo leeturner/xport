@@ -51,6 +51,34 @@ class XportCommandTest {
     }
 
     @Test
+    fun `cli returns an error if the output directory is a file`() {
+        val outputStream = ByteArrayOutputStream()
+        System.setErr(PrintStream(outputStream))
+
+        val outputFile = outputDir.resolve("file.txt").createFile()
+
+        val args = arrayOf(archiveDir.absolutePathString(), outputFile.absolutePathString(), "-v")
+        val exitCode = PicocliRunner.call(XportCommand::class.java, *args)
+
+        expectThat(exitCode).isEqualTo(1)
+        expectThat(outputStream.toString()).contains("The output directory is not a directory")
+    }
+
+    @Test
+    fun `cli returns an error if the archive directory is a file`() {
+        val outputStream = ByteArrayOutputStream()
+        System.setErr(PrintStream(outputStream))
+
+        val archiveFile = archiveDir.resolve("file.txt").createFile()
+
+        val args = arrayOf(archiveFile.absolutePathString(), outputDir.absolutePathString(), "-v")
+        val exitCode = PicocliRunner.call(XportCommand::class.java, *args)
+
+        expectThat(exitCode).isEqualTo(1)
+        expectThat(outputStream.toString()).contains("The archive directory is not a directory")
+    }
+
+    @Test
     fun `cli returns an error if the archive directory does not exist`() {
         val outputStream = ByteArrayOutputStream()
         System.setErr(PrintStream(outputStream))

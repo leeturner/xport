@@ -117,12 +117,20 @@ class XportCommand
                     "The output directory does not exist. This directory must exist and be empty: $outputDirectory"
                 }
 
+                !outputDirectory.isDirectory -> {
+                    "The output directory is not a directory: $outputDirectory"
+                }
+
                 outputDirectory.isNotEmpty() -> {
                     "The output directory is not empty. This directory must exist and be empty: $outputDirectory"
                 }
 
                 archiveDirectory.doesNotExist() -> {
                     "The archive directory does not exist. This directory must exist and contain the data directory: $archiveDirectory"
+                }
+
+                !archiveDirectory.isDirectory -> {
+                    "The archive directory is not a directory: $archiveDirectory"
                 }
 
                 archiveDirectory.doesNotContainsDataDirectory() -> {
