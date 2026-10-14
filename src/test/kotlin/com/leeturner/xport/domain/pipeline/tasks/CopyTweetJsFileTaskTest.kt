@@ -2,10 +2,9 @@ package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.createDataDirectory
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import com.leeturner.xport.toFile
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
@@ -34,8 +33,7 @@ class CopyTweetJsFileTaskTest {
         val context = Context(mapOf("outputDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -46,8 +44,7 @@ class CopyTweetJsFileTaskTest {
         val context = Context(mapOf("currentDirectory" to "foo", "tmpDirectory" to "foo"))
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called archiveDirectory provided. Please provide a archiveDirectory parameter in the context"
@@ -68,8 +65,7 @@ class CopyTweetJsFileTaskTest {
         val result = worker.run(context)
 
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweets.js file does not exist in the data directory"
@@ -97,7 +93,7 @@ class CopyTweetJsFileTaskTest {
 
         // validate the tweet.js file is in the tempDir directory
         val tempFile = tempDir.resolve("tweets.js").toFile()
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
         expectThat(tempFile.exists()).isEqualTo(true)
         expectThat(tempFile.readText()).isEqualTo(resourceFile.readText())
     }

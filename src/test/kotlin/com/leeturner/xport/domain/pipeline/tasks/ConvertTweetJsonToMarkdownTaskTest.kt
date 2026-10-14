@@ -2,10 +2,9 @@ package com.leeturner.xport.domain.pipeline.tasks
 
 import com.leeturner.xport.domain.model.TweetWrapper
 import com.leeturner.xport.domain.pipeline.Context
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import com.leeturner.xport.toFile
-import dev.forkhandles.result4k.get
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
 import io.micronaut.core.io.ResourceLoader
 import io.micronaut.serde.ObjectMapper
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -45,8 +44,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val context = Context(mapOf())
         val result = worker.run(context)
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "No parameter called tmpDirectory provided. Please provide a tmpDirectory parameter in the context"
@@ -64,8 +62,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         expectThat(result)
-            .isFailure()
-            .get { result.get() }
+            .isLeft()
             .isA<IllegalStateException>()
             .message isEqualTo
             "tweet json file does not exist in the tmp directory"
@@ -85,7 +82,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -115,7 +112,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -144,7 +141,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -173,7 +170,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -204,7 +201,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -234,7 +231,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -265,7 +262,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -294,7 +291,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(
@@ -324,7 +321,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the filtered directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         val tweetJson = tweetJsonResourceFile.readText()
@@ -367,7 +364,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be successful
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Check that the reply tweet is in the filtered directory
         val replyTweetPath = Paths.get(tempDir.toString(), "filtered", "2024-12-16T09-40.md")
@@ -408,7 +405,7 @@ class ConvertTweetJsonToMarkdownTaskTest {
         val result = worker.run(context)
 
         // Then the result should be a markdown file saved in the output directory
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
 
         // Parse the tweet date to get the expected filename
         resourceLoader.expectMarkdownMatches(

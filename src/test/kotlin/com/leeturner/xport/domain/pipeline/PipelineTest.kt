@@ -1,11 +1,11 @@
 package com.leeturner.xport.domain.pipeline
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import com.leeturner.xport.domain.pipeline.tasks.Task
-import dev.forkhandles.result4k.Failure
-import dev.forkhandles.result4k.Result
-import dev.forkhandles.result4k.Success
-import dev.forkhandles.result4k.strikt.isFailure
-import dev.forkhandles.result4k.strikt.isSuccess
+import com.leeturner.xport.isLeft
+import com.leeturner.xport.isRight
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
@@ -34,9 +34,9 @@ class PipelineTest {
 
                 override fun getDescription() = "First task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task1")
-                    return Success(Unit)
+                    return Unit.right()
                 }
             }
 
@@ -46,9 +46,9 @@ class PipelineTest {
 
                 override fun getDescription() = "Second task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task2")
-                    return Success(Unit)
+                    return Unit.right()
                 }
             }
 
@@ -58,9 +58,9 @@ class PipelineTest {
 
                 override fun getDescription() = "Third task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task3")
-                    return Success(Unit)
+                    return Unit.right()
                 }
             }
 
@@ -70,7 +70,7 @@ class PipelineTest {
         val result = pipeline.execute(context)
 
         // Then
-        expectThat(result).isSuccess()
+        expectThat(result).isRight()
         expectThat(executionOrder).isEqualTo(mutableListOf("Task1", "Task2", "Task3"))
     }
 
@@ -96,9 +96,9 @@ class PipelineTest {
 
                 override fun getDescription() = "First task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task1")
-                    return Success(Unit)
+                    return Unit.right()
                 }
             }
 
@@ -108,9 +108,9 @@ class PipelineTest {
 
                 override fun getDescription() = "Second task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task2")
-                    return Failure(exception)
+                    return exception.left()
                 }
             }
 
@@ -120,9 +120,9 @@ class PipelineTest {
 
                 override fun getDescription() = "Third task"
 
-                override fun run(context: Context): Result<Unit, Exception> {
+                override fun run(context: Context): Either<Exception, Unit> {
                     executionOrder.add("Task3")
-                    return Success(Unit)
+                    return Unit.right()
                 }
             }
 
@@ -132,7 +132,7 @@ class PipelineTest {
         val result = pipeline.execute(context)
 
         // Then
-        expectThat(result).isFailure()
+        expectThat(result).isLeft()
         expectThat(executionOrder).isEqualTo(mutableListOf("Task1", "Task2"))
     }
 }

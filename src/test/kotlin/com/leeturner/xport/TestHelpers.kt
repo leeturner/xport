@@ -1,7 +1,10 @@
 package com.leeturner.xport
 
+import arrow.core.Either
 import io.micronaut.core.io.ResourceLoader
+import strikt.api.Assertion
 import strikt.api.expectThat
+import strikt.assertions.isA
 import strikt.assertions.isEqualTo
 import java.io.File
 import java.nio.file.Path
@@ -49,3 +52,7 @@ fun Path.assertTweetMediaDirDataCopied() {
 }
 
 fun ResourceLoader.toFile(resource: String): File = File(this.getResource(resource).get().toURI())
+
+fun <L, R> Assertion.Builder<Either<L, R>>.isLeft(): Assertion.Builder<L> = isA<Either.Left<L>>().get { value }
+
+fun <L, R> Assertion.Builder<Either<L, R>>.isRight(): Assertion.Builder<R> = isA<Either.Right<R>>().get { value }
