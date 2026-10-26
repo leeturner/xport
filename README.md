@@ -1,40 +1,36 @@
-# Xport - convert your X/Twitter archive to hugo compatible Markdown
+# Xport
 
-Xport is a command-line tool built with Kotlin and Micronaut that processes Twitter data exports, converting them from 
-JavaScript format to standard JSON and then to Hugo-compatible Markdown.
+[![Build](https://github.com/leeturner/xport/actions/workflows/build.yml/badge.svg)](https://github.com/leeturner/xport/actions/workflows/build.yml)
+[![Licence](https://img.shields.io/github/license/leeturner/xport)](LICENSE)
+
+A command line tool, written in Kotlin and Micronaut, that converts an X/Twitter data export into Markdown files for
+[Hugo](https://gohugo.io/). Each tweet becomes its own file with its original timestamp, and its images and videos
+come along too. I used it to bring my old tweets over to the [microblog on my site](https://leeturner.me/microblog/).
 
 ## Features
 
-- Converts Twitter archive data from JavaScript format to JSON
-- Transforms tweets into Hugo-compatible Markdown files
-- Preserves tweet media (images, videos)
-- Maintains original tweet timestamps
-- Provides verbose output option for detailed processing information
+- Turns every tweet in the archive into a Hugo Markdown file with front matter
+- Keeps the original timestamps, for both the file names and the post dates
+- Copies images and videos from the archive and links them in each post
+- Expands `t.co` short links back to the original URLs
+- Optionally leaves out replies to other people's tweets
 
-## Installation
+## Requirements
 
-### Prerequisites
+- Java 25 or later
 
-- Java 21 or higher
-- Gradle (for building from source)
+## Install
 
-### Building from Source
+There are no releases yet, so build it from source:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/xport.git
-   cd xport
-   ```
+```bash
+git clone https://github.com/leeturner/xport.git
+cd xport
+./gradlew installDist
+```
 
-2. Build the project:
-   ```bash
-   ./gradlew build
-   ```
-
-3. Create a native executable (optional):
-   ```bash
-   ./gradlew nativeCompile
-   ```
+This puts the `xport` command in `build/install/xport/bin`. To build a native executable instead, use
+`./gradlew nativeCompile` with GraalVM.
 
 ## Usage
 
@@ -42,48 +38,25 @@ JavaScript format to standard JSON and then to Hugo-compatible Markdown.
 xport [OPTIONS] <archive-directory> <output-directory>
 ```
 
-### Arguments
+| Argument or option | Meaning |
+|---|---|
+| `<archive-directory>` | The unzipped Twitter archive, containing the `data` folder |
+| `<output-directory>` | Where to write the Markdown. It must exist and be empty |
+| `-a, --author` | Author name for the generated files |
+| `-f, --filter-replies` | Leave out tweets that reply to another tweet |
+| `-m, --media-path` | Path to put in front of media URLs in the generated files |
+| `-v, --verbose` | Show what is being processed |
+| `-h, --help` | Show help and exit |
+| `-V, --version` | Show the version and exit |
 
-- `<archive-directory>`: Path to the Twitter archive directory (containing the "data" folder)
-- `<output-directory>`: Path to the output directory (must exist and be empty)
+For example, to convert an archive with your name as the author, without replies, and with media served from
+`/images/tweets`:
 
-### Options
-
-- `-a, --author`: Author name for generated markdown files
-- `-f, --filter-replies`: Filter out tweets that are replying to another tweet
-- `-m, --media-path`: Path to be appended to media URLs in generated markdown files
-- `-h, --help`: Show help message and exit
-- `-v, --verbose`: Enable verbose output
-- `-V, --version`: Show version information and exit
-
-### Examples
-
-Basic usage:
 ```bash
-xport ~/Downloads/twitter-archive ~/Documents/my-tweets
+xport -a "Lee Turner" -f -m "/images/tweets" ~/Downloads/twitter-archive ~/Documents/my-tweets
 ```
 
-With verbose output:
-```bash
-xport -v ~/Downloads/twitter-archive ~/Documents/my-tweets
-```
-
-Specifying an author and filtering out replies:
-```bash
-xport -a "John Doe" -f ~/Downloads/twitter-archive ~/Documents/my-tweets
-```
-
-Setting a custom media path:
-```bash
-xport -m "/images/tweets" ~/Downloads/twitter-archive ~/Documents/my-tweets
-```
-
-Using multiple options:
-```bash
-xport -v -a "John Doe" -m "/images/tweets" -f ~/Downloads/twitter-archive ~/Documents/my-tweets
-```
-
-## How It Works
+## How it works
 
 Xport processes your Twitter archive through a pipeline of tasks:
 
@@ -98,10 +71,9 @@ Xport processes your Twitter archive through a pipeline of tasks:
 4. Copies media files (images, videos) from the archive
 5. Cleans up temporary files
 
-The resulting Markdown files include Hugo front matter with the tweet's timestamp and content, making them ready to use 
-with Hugo static site generator.
+The resulting Markdown files include Hugo front matter with the tweet's timestamp and content, ready to drop into a Hugo site.
 
-## Output Format
+## Output
 
 Each tweet is converted to a Markdown file with the following structure:
 
@@ -109,16 +81,16 @@ Each tweet is converted to a Markdown file with the following structure:
 ---
 title: YYYY-MM-DDTHH-MM
 date: YYYY-MM-DDTHH:MM:SS+0000
-author: Your Name  # Customizable with the -a, --author option
+author: Your Name  # Set with the -a, --author option
 showtoc: false
 comments: true
 ---
 
 Tweet content goes here
 
-![](/path/to/media)  # Path prefix customizable with the -m, --media-path option
+![](/path/to/media)  # The path prefix is set with the -m, --media-path option
 ```
 
-## Contributing
+## Licence
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Apache 2.0. See [LICENSE](LICENSE).
