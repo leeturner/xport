@@ -27,7 +27,7 @@ dependencies {
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("io.arrow-kt:arrow-core:2.2.3")
+    implementation("io.arrow-kt:arrow-core:2.3.0.1")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("tools.jackson.module:jackson-module-kotlin")
