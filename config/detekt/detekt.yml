@@ -7,7 +7,12 @@ style:
     max: 4
   MaxLineLength:
     maxLineLength: 150
+  VarCouldBeVal:
+    # picocli sets these fields by reflection
+    ignoreAnnotated: ['Option', 'Parameters']
 
 complexity:
+  LongParameterList:
+    ignoreDefaultParameters: true
   NestedBlockDepth:
     allowedDepth: 5

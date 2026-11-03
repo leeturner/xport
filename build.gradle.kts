@@ -34,6 +34,8 @@ dependencies {
 
     testImplementation("io.strikt:strikt-core:0.35.1")
     testImplementation("org.skyscreamer:jsonassert:2.0-rc1")
+
+    detektPlugins("io.github.leeturner:arrow-detekt-rules:0.3.0")
 }
 
 application {
@@ -59,6 +61,8 @@ detekt {
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
 }
+
+tasks.check { dependsOn(tasks.detektMain, tasks.detektTest) }
 
 micronaut {
     testRuntime("junit5")
